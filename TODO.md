@@ -7,6 +7,8 @@
 * add unit test for model, service and handler
 * add 'Makefile' for task automation
 * re-order the structure to follow clean architecture rules
+* schedule job
+* redis for cache
 
 
 ## Todo apps

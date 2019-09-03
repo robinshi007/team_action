@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"team_action/cmd/server"
+	"team_action/delivery/web"
 	"team_action/di"
 	"team_action/logger"
 
@@ -19,7 +19,7 @@ func main() {
 }
 
 func run() error {
-	g := gin.Default()
+	g := gin.New()
 	d := di.BuildContainer()
 
 	var l logger.LogInfoFormat
@@ -27,10 +27,12 @@ func run() error {
 		l = log
 	})
 
-	svr := server.NewServer(g, d, l)
-	svr.MapRoutes()
+	svr := web.NewServer(g, d, l)
 
-	if err := svr.SetupDB(); err != nil {
+	svr.InitMiddleware()
+	svr.InitRoutes()
+
+	if err := svr.InitDB(); err != nil {
 		return err
 	}
 	return svr.Start()

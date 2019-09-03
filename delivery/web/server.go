@@ -1,4 +1,4 @@
-package server
+package web
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"go.uber.org/dig"
 
 	"team_action/config"
-	"team_action/logger"
 	"team_action/core/user"
+	"team_action/logger"
 )
 
 type dserver struct {
@@ -27,7 +27,13 @@ func NewServer(e *gin.Engine, c *dig.Container, l logger.LogInfoFormat) *dserver
 	}
 }
 
-func (ds *dserver) SetupDB() error {
+func (ds *dserver) InitMiddleware() {
+	// setup global middeware
+	ds.router.Use(gin.Logger())
+	ds.router.Use(gin.Recovery())
+}
+
+func (ds *dserver) InitDB() error {
 	var db *gorm.DB
 	if err := ds.cont.Invoke(func(d *gorm.DB) { db = d }); err != nil {
 		return err
