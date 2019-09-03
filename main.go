@@ -2,22 +2,36 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"team_action/fib"
+	"os"
+
+	"team_action/cmd/server"
+	"team_action/di"
+	"team_action/logger"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println(reflect.TypeOf(1).String())
-	printFib(-1)
-	printFib(50)
-	printFib(50000)
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
 }
 
-func printFib(input int) {
-	result, err := fib.Fib(input)
-	if err != nil {
-		fmt.Println(err)
-		return
+func run() error {
+	g := gin.Default()
+	d := di.BuildContainer()
+
+	var l logger.LogInfoFormat
+	di.Invoke(func(log logger.LogInfoFormat) {
+		l = log
+	})
+
+	svr := server.NewServer(g, d, l)
+	svr.MapRoutes()
+
+	if err := svr.SetupDB(); err != nil {
+		return err
 	}
-	fmt.Printf("Fib(%d) = %d\n", input, result)
+	return svr.Start()
 }

@@ -1,0 +1,19 @@
+appname: denti
+port: 8282
+logger:
+  use: zapLogger
+  environment: dev
+  loglevel: debug
+  filename: tmp/team_action_dev.log
+db:
+  use: sqlite3
+  connection:
+    enabled: true
+    host:
+    port: 
+    userName: 
+    password: 
+    database: tmp/team_action_dev.db
+contacts:
+  name: 'hello'
+  email: test@example.com
