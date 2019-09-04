@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"team_action/core/user"
+	"team_action/delivery/web/dto"
+	"team_action/delivery/web/helper"
 )
 
 const identityKey = "id"
@@ -20,7 +22,7 @@ func NewJWT() (*jwt.GinJWTMiddleware, error) {
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*user.Dto); ok {
+			if v, ok := data.(*user.User); ok {
 				return jwt.MapClaims{
 					identityKey: v.UserName,
 				}
@@ -29,30 +31,29 @@ func NewJWT() (*jwt.GinJWTMiddleware, error) {
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &user.Dto{
+			return &user.User{
 				UserName: claims[identityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals user.Login
+			var loginVals dto.Login
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			userID := loginVals.Username
+			userName := loginVals.Username
 			password := loginVals.Password
 
-			if (userID == "admin" && password == "admin") || (userID == "test" && password == "test") {
-				return &user.Dto{
-					UserName:  userID,
-					LastName:  "Hello",
-					FirstName: "Hi",
+			//			if (userName == "admin" && password == "admin") || (userName == "test" && password == "test") {
+			if helper.CheckAuth(userName, password) {
+				return &user.User{
+					UserName: userName,
 				}, nil
 			}
 
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*user.Dto); ok && v.UserName == "admin" {
+			if v, ok := data.(*user.User); ok && v.UserName == "admin" {
 				return true
 			}
 

@@ -1,14 +1,14 @@
-
 ## Todo features
 
+* add mode[dev, test, prod] support for config
 * add errors for model validate, rest handler
-* add dto for services
-* add user registry/login/logout feature with jwt supported
 * add unit test for model, service and handler
+* [Done] add dto for middleware and handler
+* [Done] add user registry/login/logout feature with jwt supported
 * add 'Makefile' for task automation
 * re-order the structure to follow clean architecture rules
 * schedule job
-* redis for cache
+* [redis for cache]
 
 
 ## Todo apps

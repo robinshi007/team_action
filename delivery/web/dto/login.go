@@ -1,4 +1,4 @@
-package user
+package dto
 
 // IdentityKey -
 var IdentityKey = "id"
@@ -7,11 +7,4 @@ var IdentityKey = "id"
 type Login struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
-}
-
-// Dto demo
-type Dto struct {
-	UserName  string
-	FirstName string
-	LastName  string
 }
