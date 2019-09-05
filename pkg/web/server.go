@@ -10,6 +10,7 @@ import (
 	"team_action/pkg/config"
 	"team_action/pkg/logger"
 	"team_action/pkg/user"
+	"team_action/pkg/web/handler"
 )
 
 type dserver struct {
@@ -31,6 +32,7 @@ func (ds *dserver) InitMiddleware() {
 	// setup global middeware
 	ds.router.Use(gin.Logger())
 	ds.router.Use(gin.Recovery())
+	ds.router.Use(handler.InternalServerErrRecover())
 }
 
 func (ds *dserver) InitDB() error {

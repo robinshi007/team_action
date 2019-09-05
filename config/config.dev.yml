@@ -1,19 +1,14 @@
-appname: team_action
-port: 3000
 logger:
   use: zapLogger
   environment: dev
   loglevel: debug
-  filename: 
+  filename: tmp/team_action_dev.log
 db:
-  use: 
+  use: sqlite3
   connection:
     enabled: true
-    host: 
+    host:
     port: 
     userName: 
     password: 
-    database: 
-contacts:
-  name: 'hello'
-  email: test@example.com
+    database: tmp/team_action_dev.db

@@ -1,11 +1,10 @@
 package web
 
 import (
-	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 
 	"team_action/pkg/user"
-	user_handler "team_action/pkg/user/delivery/handler"
+	user_handler "team_action/pkg/user/web/handler"
 	"team_action/pkg/web/handler"
 	mw "team_action/pkg/web/middleware"
 )
@@ -25,11 +24,6 @@ func (ds *dserver) globalRoutes(gr *gin.Engine) {
 	}
 	a := handler.NewHelloCtrl()
 	gr.POST("/login", jwtMW.LoginHandler)
-	gr.NoRoute(jwtMW.MiddlewareFunc(), func(c *gin.Context) {
-		claims := jwt.ExtractClaims(c)
-		ds.logger.Infof("NoRoute claims: %#v\n", claims)
-		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
-	})
 
 	auth := gr.Group("/auth")
 	auth.GET("/refresh_token", jwtMW.RefreshHandler)
@@ -37,6 +31,9 @@ func (ds *dserver) globalRoutes(gr *gin.Engine) {
 	{
 		auth.GET("/hello", a.SayHi)
 	}
+
+	gr.GET("/crash", a.Crash)
+	gr.NoRoute(handler.NotFoundResponse)
 }
 
 func (ds *dserver) healthRoutes(api *gin.RouterGroup) {

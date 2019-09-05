@@ -1,4 +1,9 @@
-golang web application startkit with Clean Architecture
+Team Action: collabration space for team use
+
+## Goal
+
+* Build golang web application with Clean Architect
+* Simple, Fast, Trusted
 
 ## Dependencies
 
@@ -7,7 +12,6 @@ golang web application startkit with Clean Architecture
 * zap - logger
 * dig - dependency injection
 * go.uuid - UUID v4
-* configor - configuration helper
 * graphql - graphql server and client
 
 ## Folder layout
