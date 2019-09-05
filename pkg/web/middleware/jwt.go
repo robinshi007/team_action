@@ -6,9 +6,9 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
-	"team_action/core/user"
-	"team_action/delivery/web/dto"
-	"team_action/delivery/web/helper"
+	"team_action/pkg/user"
+	"team_action/pkg/user/dto"
+	"team_action/pkg/web/helper"
 )
 
 const identityKey = "id"

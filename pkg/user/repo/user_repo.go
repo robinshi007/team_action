@@ -1,4 +1,4 @@
-package orm
+package repo
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"team_action/core/user"
-	"team_action/logger"
+	"team_action/pkg/logger"
+	"team_action/pkg/user"
 )
 
 type userRepo struct {
@@ -16,7 +16,7 @@ type userRepo struct {
 }
 
 // NewUserRepo -
-func NewUserRepo(db *gorm.DB, log logger.LogInfoFormat) user.Repository {
+func NewUserRepo(db *gorm.DB, log logger.LogInfoFormat) user.Repo {
 	return &userRepo{db, log}
 }
 

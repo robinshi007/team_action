@@ -7,9 +7,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"go.uber.org/dig"
 
-	"team_action/config"
-	"team_action/core/user"
-	"team_action/logger"
+	"team_action/pkg/config"
+	"team_action/pkg/logger"
+	"team_action/pkg/user"
 )
 
 type dserver struct {

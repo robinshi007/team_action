@@ -18,3 +18,4 @@ golang web application startkit with Clean Architecture
 
 * <https://github.com/AkbaraliShaikh/denti>
 * <https://github.com/ErikJiang/market_monitor>
+* <https://hackernoon.com/golang-clean-archithecture-efd6d7c43047>

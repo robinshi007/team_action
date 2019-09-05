@@ -1,7 +1,7 @@
 package user
 
 // Repository -
-type Repository interface {
+type Repo interface {
 	Delete(id string) error
 	GetAll() ([]*User, error)
 	GetByID(id string) (*User, error)

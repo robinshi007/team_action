@@ -6,8 +6,8 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
-	u "team_action/core/user"
-	"team_action/delivery/web/dto"
+	u "team_action/pkg/user"
+	"team_action/pkg/user/dto"
 )
 
 type helloCtrl struct{}

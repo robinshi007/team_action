@@ -1,5 +1,5 @@
-appname: denti
-port: 8282
+appname: team_action
+port: 3000
 logger:
   use: zapLogger
   environment: dev

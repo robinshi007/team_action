@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"team_action/config"
+	"team_action/pkg/config"
 
 	"go.uber.org/zap"
 )

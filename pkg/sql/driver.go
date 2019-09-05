@@ -1,4 +1,4 @@
-package storage
+package sql
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	// sqlite3
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"team_action/config"
+	"team_action/pkg/config"
 )
 
 // NewDb -

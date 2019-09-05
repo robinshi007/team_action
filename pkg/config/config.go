@@ -4,13 +4,13 @@ import "github.com/jinzhu/configor"
 
 // Config - config
 type Config struct {
-	AppName string `default:"denti"`
-	Port    string `default:"8282"`
+	AppName string `default:"team_action"`
+	Port    string `default:"3000"`
 	Logger  struct {
 		Use         string `default:"zapLogger"`
 		Environment string `default:"prod"`
 		LogLevel    string `default:"info"`
-		FileName    string `default:"denti.log"`
+		FileName    string `default:"team_action.log"`
 	}
 	DB struct {
 		Use        string `default:"postgres"`
@@ -24,8 +24,8 @@ type Config struct {
 		}
 	}
 	Contacts struct {
-		Name  string `default:"Akbar Shaikh"`
-		Email string `default:"aashaikh55@gmail.com"`
+		Name  string `default:"Robin Shi"`
+		Email string `default:"robinshi@outlook.com"`
 	}
 }
 

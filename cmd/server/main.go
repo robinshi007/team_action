@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"team_action/delivery/web"
 	"team_action/di"
-	"team_action/logger"
+	"team_action/pkg/logger"
+	"team_action/pkg/web"
 
 	"github.com/gin-gonic/gin"
 )

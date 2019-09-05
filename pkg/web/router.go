@@ -4,9 +4,10 @@ import (
 	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 
-	"team_action/core/user"
-	"team_action/delivery/web/handler"
-	mw "team_action/delivery/web/middleware"
+	"team_action/pkg/user"
+	user_handler "team_action/pkg/user/delivery/handler"
+	"team_action/pkg/web/handler"
+	mw "team_action/pkg/web/middleware"
 )
 
 func (ds *dserver) InitRoutes() {
@@ -53,7 +54,7 @@ func (ds *dserver) userRoutes(api *gin.RouterGroup) {
 			userSvc = u
 		})
 
-		usr := handler.NewUserCtrl(ds.logger, userSvc)
+		usr := user_handler.NewUserCtrl(ds.logger, userSvc)
 
 		userRoutes.GET("/", usr.GetAll)
 		userRoutes.POST("/", usr.Store)

@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 
-	"team_action/core/user"
-	"team_action/logger"
+	"team_action/pkg/logger"
+	"team_action/pkg/user"
 )
 
 type userCtrl struct {

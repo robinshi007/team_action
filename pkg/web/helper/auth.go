@@ -3,8 +3,8 @@ package helper
 import (
 	"github.com/jinzhu/gorm"
 
-	u "team_action/core/user"
 	"team_action/di"
+	u "team_action/pkg/user"
 )
 
 // CheckAuth -
