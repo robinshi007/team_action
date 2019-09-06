@@ -10,7 +10,6 @@ import (
 
 	u "team_action/pkg/user"
 	"team_action/pkg/user/dto"
-	"team_action/pkg/web/types"
 )
 
 func init() {
@@ -42,15 +41,7 @@ func (h *helloCtrl) Crash(ctx *gin.Context) {
 		panic("panic crash")
 	} else {
 		// expected error
-		ctx.AbortWithStatusJSON(400, &types.ResponseData{
-			Success:   false,
-			ErrorCode: 10000,
-			Message:   "Expected Error for testing",
-		})
+		HandleErrorCodeCustomRepsonse("1103", "Expected Error for testing", ctx)
 		return
 	}
-	// never get here
-	//	ctx.JSON(http.StatusOK, gin.H{
-	//		"message": "Test crash.",
-	//	})
 }

@@ -1,21 +1,17 @@
 package handler
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 
 	"team_action/pkg/web/types"
 )
 
 // NotFoundResponse - 404
 func NotFoundResponse(c *gin.Context) {
-	c.JSON(http.StatusNotFound, &types.ResponseData{
-		Success:   false,
-		ErrorCode: 10000,
-		Message:   "404 Page not found!!!",
-	})
+	HandleErrorCodeRepsonse("1102", c)
 }
 
 // XHR check if is XMLHttpRequest
@@ -30,21 +26,48 @@ func InternalServerErrRecover() gin.HandlerFunc {
 			if rec := recover(); rec != nil {
 				// check if is XHR
 				if XHR(c) {
-					c.JSON(http.StatusInternalServerError, &types.ResponseData{
-						Success:   false,
-						ErrorCode: 10000,
-						Message:   "Oops with xmlhttprequest! please retry.",
-					})
+					HandleErrorCodeCustomRepsonse("1102", "Oops! Internal error with XMLHttpRequest, please try again.", c)
 					return
 				}
-				c.JSON(http.StatusInternalServerError, &types.ResponseData{
-					Success:   false,
-					ErrorCode: 10000,
-					Message:   "Oops! please retry.",
-				})
+				HandleErrorCodeRepsonse("1102", c)
 			}
 		}(c)
 
 		c.Next()
 	}
+}
+
+// HandleErrorRepsonse -
+func HandleErrorRepsonse(err error, ctx *gin.Context) {
+	if err != nil {
+		ge, ok := errors.Cause(err).(types.GeneralError)
+		if ok {
+			HandleErrorCodeCustomRepsonse(string(ge.Code()), strings.Join(ge.Messages(), ","), ctx)
+		}
+		ie, ok := errors.Cause(err).(types.InternalError)
+		if ok && ie.Internal() {
+			// log the info
+		} else {
+			// log the info
+		}
+		HandleErrorCodeCustomRepsonse("1103", err.Error(), ctx)
+	}
+}
+
+// HandleErrorCodeRepsonse -
+func HandleErrorCodeRepsonse(codeStr string, ctx *gin.Context) {
+	var code types.ErrorCode = types.ErrorCode(codeStr)
+	ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+		Code:   code,
+		Errors: []string{types.GetErrorMessage(code)},
+	})
+}
+
+// HandleErrorCodeCustomRepsonse -
+func HandleErrorCodeCustomRepsonse(codeStr string, message string, ctx *gin.Context) {
+	var code types.ErrorCode = types.ErrorCode(codeStr)
+	ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+		Code:   code,
+		Errors: []string{message},
+	})
 }
