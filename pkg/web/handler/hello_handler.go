@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"math/rand"
 	"net/http"
 	"time"
@@ -11,6 +10,7 @@ import (
 
 	u "team_action/pkg/user"
 	"team_action/pkg/user/dto"
+	"team_action/pkg/web/types"
 )
 
 func init() {
@@ -37,15 +37,15 @@ func (h *helloCtrl) SayHi(ctx *gin.Context) {
 
 // Crash - test 50x handler
 func (h *helloCtrl) Crash(ctx *gin.Context) {
-	err := errors.New("user not found")
 	if rand.Intn(10) >= 5 {
 		// unexpected error
 		panic("panic crash")
 	} else {
 		// expected error
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"code":    err.Error(),
-			"message": "expected error",
+		ctx.AbortWithStatusJSON(400, &types.ResponseData{
+			Success:   false,
+			ErrorCode: 10000,
+			Message:   "Expected Error for testing",
 		})
 		return
 	}

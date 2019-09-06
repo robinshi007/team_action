@@ -5,13 +5,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"team_action/pkg/web/types"
 )
 
 // NotFoundResponse - 404
 func NotFoundResponse(c *gin.Context) {
-	c.JSON(http.StatusNotFound, gin.H{
-		"code":    ErrNotFound.Error(),
-		"message": "404 Page not found!!!",
+	c.JSON(http.StatusNotFound, &types.ResponseData{
+		Success:   false,
+		ErrorCode: 10000,
+		Message:   "404 Page not found!!!",
 	})
 }
 
@@ -27,15 +30,17 @@ func InternalServerErrRecover() gin.HandlerFunc {
 			if rec := recover(); rec != nil {
 				// check if is XHR
 				if XHR(c) {
-					c.JSON(http.StatusInternalServerError, gin.H{
-						"code":    ErrInternalServerError.Error(),
-						"message": "Oops with xmlhttprequest! please retry.",
+					c.JSON(http.StatusInternalServerError, &types.ResponseData{
+						Success:   false,
+						ErrorCode: 10000,
+						Message:   "Oops with xmlhttprequest! please retry.",
 					})
 					return
 				}
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"code":    ErrInternalServerError.Error(),
-					"message": "Oops! please retry.",
+				c.JSON(http.StatusInternalServerError, &types.ResponseData{
+					Success:   false,
+					ErrorCode: 10000,
+					Message:   "Oops! please retry.",
 				})
 			}
 		}(c)

@@ -8,6 +8,7 @@ import (
 
 	"team_action/pkg/logger"
 	"team_action/pkg/user"
+	"team_action/pkg/web/types"
 )
 
 type userCtrl struct {
@@ -26,7 +27,10 @@ func (u *userCtrl) GetAll(ctx *gin.Context) {
 		ctx.Status(http.StatusNoContent)
 		return
 	}
-	ctx.JSON(http.StatusOK, users)
+	ctx.JSON(http.StatusOK, &types.ResponseData{
+		Success: true,
+		Data:    users,
+	})
 }
 
 func (u *userCtrl) GetByID(ctx *gin.Context) {
@@ -41,7 +45,10 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, &types.ResponseData{
+		Success: true,
+		Data:    user,
+	})
 }
 
 func (u *userCtrl) Store(ctx *gin.Context) {
