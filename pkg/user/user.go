@@ -11,7 +11,7 @@ import (
 type User struct {
 	ID          string    `json:"user_id"  gorm:"type:uuid;column:user_id;primary_key;"`
 	Email       string    `json:"-"  gorm:"type:varchar(200);UNIQUE,NOT NULL"`
-	UserName    string    `json:"user_name"  gorm:"type:varchar(50);column:user_name;UNIQUE,NOT NULL"`
+	UserName    string    `json:"username"  gorm:"type:varchar(50);column:user_name;UNIQUE,NOT NULL"`
 	DisplayName string    `json:"-"  gorm:"type:varchar(50);column:display_name;"`
 	FirstName   string    `json:"-"  gorm:"type:varchar(50);column:first_name;"`
 	LastName    string    `json:"-" gorm:"type:varchar(50);column:last_name"`

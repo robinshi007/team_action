@@ -12,14 +12,14 @@ describe('User', function(){
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.*', {
         user_id: Joi.string(),
-        user_name: Joi.string(),
+        username: Joi.string(),
         created_at: Joi.string(),
         updated_at: Joi.string(),
       })
   })
   it('create user should be not ok without admin login', function() {
     return frisby.post(hostApi +'/users', {
-      user_name: 'test',
+      username: 'test',
       password: 'test'
     })
       .expect('status', 401)
@@ -60,7 +60,7 @@ describe('User', function(){
             Authorization: "Bearer " + resToken,
           },
           body : {
-            user_name: 'test',
+            username: 'test',
             password: 'test',
           }
         })
@@ -89,7 +89,7 @@ describe('User', function(){
             Authorization: "Bearer " + resToken,
           },
           body : {
-            user_name: 'test',
+            username: 'test',
             password: 'test',
           }
         })
