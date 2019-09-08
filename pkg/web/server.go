@@ -44,6 +44,8 @@ func (ds *dserver) InitDB() error {
 	db.LogMode(true)
 	//db.Exec("SET search_path TO team_action_dev")
 	db.AutoMigrate(&user.User{})
+	db.Model(&user.User{}).AddUniqueIndex("idx_user_name", "user_name")
+
 	return nil
 }
 

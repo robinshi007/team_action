@@ -26,7 +26,7 @@ func InternalServerErrRecover() gin.HandlerFunc {
 			if rec := recover(); rec != nil {
 				// check if is XHR
 				if XHR(c) {
-					HandleErrorCodeCustomRepsonse("1102", "Oops! Internal error with XMLHttpRequest, please try again.", c)
+					HandleErrorCodeCustomRepsonse("1102", []string{"Oops! Internal error with XMLHttpRequest, please try again."}, c)
 					return
 				}
 				HandleErrorCodeRepsonse("1102", c)
@@ -42,7 +42,7 @@ func HandleErrorRepsonse(err error, ctx *gin.Context) {
 	if err != nil {
 		ge, ok := errors.Cause(err).(types.GeneralError)
 		if ok {
-			HandleErrorCodeCustomRepsonse(string(ge.Code()), strings.Join(ge.Messages(), ","), ctx)
+			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
 		}
 		ie, ok := errors.Cause(err).(types.InternalError)
 		if ok && ie.Internal() {
@@ -50,7 +50,22 @@ func HandleErrorRepsonse(err error, ctx *gin.Context) {
 		} else {
 			// log the info
 		}
-		HandleErrorCodeCustomRepsonse("1103", err.Error(), ctx)
+		HandleErrorCodeCustomRepsonse("1103", []string{err.Error()}, ctx)
+	}
+}
+func HandleBadRequestRepsonse(err error, ctx *gin.Context) {
+	if err != nil {
+		ge, ok := errors.Cause(err).(types.GeneralError)
+		if ok {
+			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
+		}
+		ie, ok := errors.Cause(err).(types.InternalError)
+		if ok && ie.Internal() {
+			// log the info
+		} else {
+			// log the info
+		}
+		HandleErrorCodeCustomRepsonse("1101", []string{err.Error()}, ctx)
 	}
 }
 
@@ -64,10 +79,24 @@ func HandleErrorCodeRepsonse(codeStr string, ctx *gin.Context) {
 }
 
 // HandleErrorCodeCustomRepsonse -
-func HandleErrorCodeCustomRepsonse(codeStr string, message string, ctx *gin.Context) {
+func HandleErrorCodeCustomRepsonse(codeStr string, messages []string, ctx *gin.Context) {
 	var code types.ErrorCode = types.ErrorCode(codeStr)
+	if len(messages) >= 1 {
+		strs := strings.Split(messages[0], "\n")
+		if len(strs) > 1 {
+			var res []string
+			for _, v := range strs {
+				res = append(res, v)
+			}
+			ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+				Code:   code,
+				Errors: res,
+			})
+			return
+		}
+	}
 	ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
 		Code:   code,
-		Errors: []string{message},
+		Errors: messages,
 	})
 }

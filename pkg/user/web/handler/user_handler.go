@@ -8,6 +8,8 @@ import (
 
 	"team_action/pkg/logger"
 	"team_action/pkg/user"
+	up "team_action/pkg/user"
+	"team_action/pkg/user/dto"
 	ghandler "team_action/pkg/web/handler"
 	"team_action/pkg/web/types"
 )
@@ -52,40 +54,48 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 }
 
 func (u *userCtrl) Store(ctx *gin.Context) {
-	var user user.User
+	var user dto.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ghandler.HandleErrorRepsonse(err, ctx)
-		//ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	u.svc.Store(&user)
+	if err := u.svc.Store(&up.User{
+		UserName: user.UserName,
+		Password: user.Password,
+	}); err != nil {
+		ghandler.HandleErrorRepsonse(err, ctx)
+		return
+	}
 	ctx.Status(http.StatusCreated)
 }
 
 func (u *userCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
-		ghandler.HandleErrorRepsonse(err, ctx)
-		//ctx.Status(http.StatusBadRequest)
+		ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 
-	var user user.User
+	var user dto.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ghandler.HandleErrorRepsonse(err, ctx)
-		//ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	user.ID = id
-	u.svc.Update(&user)
+	if err := u.svc.Update(&up.User{
+		ID:       id,
+		UserName: user.UserName,
+		Password: user.Password,
+	}); err != nil {
+		ghandler.HandleErrorRepsonse(err, ctx)
+		return
+	}
 	ctx.Status(http.StatusOK)
 }
 
 func (u *userCtrl) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
-		ghandler.HandleErrorRepsonse(err, ctx)
-		//ctx.Status(http.StatusBadRequest)
+		ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 	u.svc.Delete(id)

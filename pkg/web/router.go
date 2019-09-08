@@ -1,12 +1,12 @@
 package web
 
 import (
-	"github.com/gin-gonic/gin"
-
 	"team_action/pkg/user"
 	user_handler "team_action/pkg/user/web/handler"
 	"team_action/pkg/web/handler"
 	mw "team_action/pkg/web/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func (ds *dserver) InitRoutes() {
@@ -44,6 +44,10 @@ func (ds *dserver) healthRoutes(api *gin.RouterGroup) {
 	}
 }
 func (ds *dserver) userRoutes(api *gin.RouterGroup) {
+	jwtMW, err := mw.NewJWT()
+	if err != nil {
+		ds.logger.Info("JWT Error:" + err.Error())
+	}
 	userRoutes := api.Group("/users")
 	{
 		var userSvc user.Service
@@ -54,9 +58,12 @@ func (ds *dserver) userRoutes(api *gin.RouterGroup) {
 		usr := user_handler.NewUserCtrl(ds.logger, userSvc)
 
 		userRoutes.GET("/", usr.GetAll)
-		userRoutes.POST("/", usr.Store)
 		userRoutes.GET("/:id", usr.GetByID)
+		userRoutes.Use(jwtMW.MiddlewareFunc())
+		userRoutes.POST("/", usr.Store)
 		userRoutes.PUT("/:id", usr.Update)
-		userRoutes.DELETE("/:id", usr.Delete)
+		{
+			userRoutes.DELETE("/:id", usr.Delete)
+		}
 	}
 }

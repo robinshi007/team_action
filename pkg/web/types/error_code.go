@@ -11,7 +11,7 @@ import (
 //	InvalidTimezone
 //	ExceedRequestLimit
 //	// 11xx Http errors
-//	MissingHeaderOrParameter
+//	InvalidHeaderOrParameter
 //	HTTPNotFound
 //	HTTPInternalError
 //	// 12xx Auth Errors
@@ -47,9 +47,9 @@ const (
 	InvalidTimezone    ErrorCode = "1003"
 	ExceedRequestLimit ErrorCode = "1004"
 
-	MissingHeaderOrParam ErrorCode = "1101"
-	HTTPNotFound         ErrorCode = "1102"
-	HTTPInternalError    ErrorCode = "1103"
+	HttpInvalidHeaderOrParam ErrorCode = "1101"
+	HTTPNotFound             ErrorCode = "1102"
+	HTTPInternalError        ErrorCode = "1103"
 
 	AuthenticationFailure      ErrorCode = "1201"
 	AuthenticationParamMissing ErrorCode = "1202"
@@ -66,9 +66,9 @@ var codeStatusMap = map[ErrorCode]int{
 	InvalidTimezone:    http.StatusInternalServerError,
 	ExceedRequestLimit: http.StatusInternalServerError,
 
-	MissingHeaderOrParam: http.StatusBadRequest,
-	HTTPNotFound:         http.StatusNotFound,
-	HTTPInternalError:    http.StatusInternalServerError,
+	HttpInvalidHeaderOrParam: http.StatusBadRequest,
+	HTTPNotFound:             http.StatusNotFound,
+	HTTPInternalError:        http.StatusInternalServerError,
 
 	AuthenticationFailure:      http.StatusForbidden,
 	AuthenticationParamMissing: http.StatusForbidden,
@@ -90,9 +90,9 @@ var codeMessageMap = map[ErrorCode]string{
 	InvalidTimezone:    "Invalid timezone",
 	ExceedRequestLimit: "Exceed max limit of reqeust",
 
-	MissingHeaderOrParam: "Missing headers or pamraters",
-	HTTPNotFound:         "404, resources is not found.",
-	HTTPInternalError:    "Oops! Internal error, please try again.",
+	HttpInvalidHeaderOrParam: "Invalid headers or pamraters",
+	HTTPNotFound:             "404, not found.",
+	HTTPInternalError:        "Oops! Internal error, please try again.",
 
 	AuthenticationFailure:      "Authorizated failed",
 	AuthenticationParamMissing: "Authorizated failed",

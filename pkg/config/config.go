@@ -68,6 +68,6 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("config %v", c)
+	//fmt.Printf("config %v", c)
 	return c, nil
 }

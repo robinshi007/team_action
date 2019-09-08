@@ -1,5 +1,7 @@
 package user
 
+import "team_action/pkg/user/helper"
+
 // Service -
 type Service interface {
 	Delete(id string) error
@@ -33,6 +35,7 @@ func (svc *userService) GetByID(id string) (*User, error) {
 }
 
 func (svc *userService) Store(u *User) error {
+	u.Password = helper.HashAndSalt([]byte(u.Password))
 	return svc.repo.Store(u)
 }
 

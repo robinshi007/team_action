@@ -1,0 +1,14 @@
+logger:
+  use: zapLogger
+  environment: dev
+  loglevel: debug
+  filename: tmp/team_action_test.log
+db:
+  use: sqlite3
+  connection:
+    enabled: true
+    host:
+    port: 
+    userName: 
+    password: 
+    database: tmp/team_action_test.db

@@ -41,7 +41,7 @@ func (h *helloCtrl) Crash(ctx *gin.Context) {
 		panic("panic crash")
 	} else {
 		// expected error
-		HandleErrorCodeCustomRepsonse("1103", "Expected Error for testing", ctx)
+		HandleErrorCodeCustomRepsonse("1103", []string{"Expected Error for testing"}, ctx)
 		return
 	}
 }

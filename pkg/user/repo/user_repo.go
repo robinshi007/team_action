@@ -20,6 +20,21 @@ func NewUserRepo(db *gorm.DB, log logger.LogInfoFormat) user.Repo {
 	return &userRepo{db, log}
 }
 
+// UserIsExist -
+func UserIsExist(db *gorm.DB, name string) bool {
+	//	var db *gorm.DB
+	//	d := di.BuildContainer()
+	//	if err := d.Invoke(func(d *gorm.DB) { db = d }); err != nil {
+	//		return false
+	//	}
+	var user user.User
+	db.Where("user_name = ?", name).First(&user)
+	if user.ID != "" {
+		return true
+	}
+	return false
+}
+
 func (u *userRepo) Delete(id string) error {
 	u.log.Debugf("deleting the user with id : %s", id)
 
@@ -58,6 +73,9 @@ func (u *userRepo) GetByID(id string) (*user.User, error) {
 func (u *userRepo) Store(usr *user.User) error {
 	u.log.Debugf("creating the user with email : %v", usr.Email)
 
+	if UserIsExist(u.db, usr.UserName) {
+		return errors.New(fmt.Sprintf("User name exist: %s", usr.UserName))
+	}
 	err := u.db.Create(&usr).Error
 	if err != nil {
 		u.log.Errorf("error while creating the user, reason : %v", err)
@@ -69,7 +87,7 @@ func (u *userRepo) Store(usr *user.User) error {
 func (u *userRepo) Update(usr *user.User) error {
 	u.log.Debugf("updating the user, user_id : %v", usr.ID)
 
-	err := u.db.Model(&usr).Updates(user.User{FirstName: usr.FirstName, LastName: usr.LastName, Password: usr.Password, Picture: usr.Picture, PhoneNumber: usr.PhoneNumber}).Error
+	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, FirstName: usr.FirstName, LastName: usr.LastName, Password: usr.Password, Picture: usr.Picture, PhoneNumber: usr.PhoneNumber}).Error
 	if err != nil {
 		u.log.Errorf("error while updating the user, reason : %v", err)
 		return err
