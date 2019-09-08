@@ -3,9 +3,9 @@ package middleware
 import (
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
+	"team_action/pkg/jwt"
 	"team_action/pkg/user"
 	"team_action/pkg/user/dto"
 	"team_action/pkg/web/helper"
@@ -14,10 +14,10 @@ import (
 const identityKey = "id"
 
 // NewJWT -
-func NewJWT() (*jwt.GinJWTMiddleware, error) {
+func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "test zone",
-		Key:         []byte("secret key"),
+		Realm:       realm,
+		Key:         []byte(key),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,

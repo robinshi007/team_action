@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
+	"team_action/pkg/cerrors"
 	"team_action/pkg/web/types"
 )
 
@@ -40,11 +41,11 @@ func InternalServerErrRecover() gin.HandlerFunc {
 // HandleErrorRepsonse -
 func HandleErrorRepsonse(err error, ctx *gin.Context) {
 	if err != nil {
-		ge, ok := errors.Cause(err).(types.GeneralError)
+		ge, ok := errors.Cause(err).(cerrors.GeneralError)
 		if ok {
 			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
 		}
-		ie, ok := errors.Cause(err).(types.InternalError)
+		ie, ok := errors.Cause(err).(cerrors.InternalError)
 		if ok && ie.Internal() {
 			// log the info
 		} else {
@@ -55,11 +56,11 @@ func HandleErrorRepsonse(err error, ctx *gin.Context) {
 }
 func HandleBadRequestRepsonse(err error, ctx *gin.Context) {
 	if err != nil {
-		ge, ok := errors.Cause(err).(types.GeneralError)
+		ge, ok := errors.Cause(err).(cerrors.GeneralError)
 		if ok {
 			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
 		}
-		ie, ok := errors.Cause(err).(types.InternalError)
+		ie, ok := errors.Cause(err).(cerrors.InternalError)
 		if ok && ie.Internal() {
 			// log the info
 		} else {
@@ -71,16 +72,16 @@ func HandleBadRequestRepsonse(err error, ctx *gin.Context) {
 
 // HandleErrorCodeRepsonse -
 func HandleErrorCodeRepsonse(codeStr string, ctx *gin.Context) {
-	var code types.ErrorCode = types.ErrorCode(codeStr)
-	ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+	var code cerrors.ErrorCode = cerrors.ErrorCode(codeStr)
+	ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
 		Code:   code,
-		Errors: []string{types.GetErrorMessage(code)},
+		Errors: []string{cerrors.GetErrorMessage(code)},
 	})
 }
 
 // HandleErrorCodeCustomRepsonse -
 func HandleErrorCodeCustomRepsonse(codeStr string, messages []string, ctx *gin.Context) {
-	var code types.ErrorCode = types.ErrorCode(codeStr)
+	var code cerrors.ErrorCode = cerrors.ErrorCode(codeStr)
 	if len(messages) >= 1 {
 		strs := strings.Split(messages[0], "\n")
 		if len(strs) > 1 {
@@ -88,14 +89,14 @@ func HandleErrorCodeCustomRepsonse(codeStr string, messages []string, ctx *gin.C
 			for _, v := range strs {
 				res = append(res, v)
 			}
-			ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+			ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
 				Code:   code,
 				Errors: res,
 			})
 			return
 		}
 	}
-	ctx.JSON(types.GetHTTPStatus(code), &types.ErrorResponse{
+	ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
 		Code:   code,
 		Errors: messages,
 	})

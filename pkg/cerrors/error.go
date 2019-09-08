@@ -1,4 +1,4 @@
-package types
+package cerrors
 
 // GeneralError - public error
 type GeneralError interface {
@@ -11,16 +11,20 @@ type InternalError interface {
 	Internal() bool
 }
 
-type dbError struct {
+// DBError -
+type DBError struct {
 	// custom message with context information, i.e., [createUser]
 	message string
 	// store original error created by library
 	originalError error
 }
 
-func (de *dbError) Internal() bool {
+// Internal -
+func (de *DBError) Internal() bool {
 	return true
 }
-func (de *dbError) Error() string {
+
+// Error -
+func (de *DBError) Error() string {
 	return de.message + ":" + de.originalError.Error()
 }

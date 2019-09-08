@@ -1,7 +1,6 @@
-package types
+package cerrors
 
 import (
-	"errors"
 	"net/http"
 )
 
@@ -22,16 +21,6 @@ import (
 //	SessionExpired
 //	SessionInvalid
 //	InvalidEmailOrPassword
-var (
-	// ErrNotFound -
-	ErrNotFound            = errors.New("PAGE NOT FOUND")
-	ErrInternalServerError = errors.New("INTERNAL SERVER ERROR")
-)
-
-type ErrorMessage struct {
-	Code    string
-	Message string
-}
 
 // ErrorCode is error type to used
 type ErrorCode string
@@ -47,7 +36,7 @@ const (
 	InvalidTimezone    ErrorCode = "1003"
 	ExceedRequestLimit ErrorCode = "1004"
 
-	HttpInvalidHeaderOrParam ErrorCode = "1101"
+	HTTPInvalidHeaderOrParam ErrorCode = "1101"
 	HTTPNotFound             ErrorCode = "1102"
 	HTTPInternalError        ErrorCode = "1103"
 
@@ -66,7 +55,7 @@ var codeStatusMap = map[ErrorCode]int{
 	InvalidTimezone:    http.StatusInternalServerError,
 	ExceedRequestLimit: http.StatusInternalServerError,
 
-	HttpInvalidHeaderOrParam: http.StatusBadRequest,
+	HTTPInvalidHeaderOrParam: http.StatusBadRequest,
 	HTTPNotFound:             http.StatusNotFound,
 	HTTPInternalError:        http.StatusInternalServerError,
 
@@ -90,9 +79,9 @@ var codeMessageMap = map[ErrorCode]string{
 	InvalidTimezone:    "Invalid timezone",
 	ExceedRequestLimit: "Exceed max limit of reqeust",
 
-	HttpInvalidHeaderOrParam: "Invalid headers or pamraters",
+	HTTPInvalidHeaderOrParam: "Invalid headers or pamraters",
 	HTTPNotFound:             "404, not found.",
-	HTTPInternalError:        "Oops! Internal error, please try again.",
+	HTTPInternalError:        "Oops! Something went wrong, please try again.",
 
 	AuthenticationFailure:      "Authorizated failed",
 	AuthenticationParamMissing: "Authorizated failed",

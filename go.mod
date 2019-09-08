@@ -3,8 +3,8 @@ module team_action
 go 4.12
 
 require (
-	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/appleboy/gin-jwt/v2 v2.6.2
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.4.0
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10

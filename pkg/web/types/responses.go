@@ -1,5 +1,9 @@
 package types
 
+import (
+	"team_action/pkg/cerrors"
+)
+
 // ResponseData -
 type ResponseData struct {
 	ErrorCode int         `json:"error_code,omitempty"`
@@ -16,6 +20,6 @@ type SuccessResponse struct {
 
 // ErrorResponse -
 type ErrorResponse struct {
-	Code   ErrorCode `json:"code"`
-	Errors []string  `json:"errors"`
+	Code   cerrors.ErrorCode `json:"code"`
+	Errors []string          `json:"errors"`
 }

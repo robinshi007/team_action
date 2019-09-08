@@ -18,7 +18,7 @@ func (ds *dserver) InitRoutes() {
 }
 
 func (ds *dserver) globalRoutes(gr *gin.Engine) {
-	jwtMW, err := mw.NewJWT()
+	jwtMW, err := mw.NewJWT("test zone", "secret key")
 	if err != nil {
 		ds.logger.Info("JWT Error:" + err.Error())
 	}
@@ -44,7 +44,7 @@ func (ds *dserver) healthRoutes(api *gin.RouterGroup) {
 	}
 }
 func (ds *dserver) userRoutes(api *gin.RouterGroup) {
-	jwtMW, err := mw.NewJWT()
+	jwtMW, err := mw.NewJWT("test zone", "secret key")
 	if err != nil {
 		ds.logger.Info("JWT Error:" + err.Error())
 	}
