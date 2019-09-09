@@ -5,6 +5,8 @@ const host = 'http://localhost:3000'
 const hostApi = host + '/api/v1'
 
 describe('User', function(){
+  var token = ""
+  var tetUserId=""
 
   it('list user should be ok but without password column', function() {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
@@ -24,22 +26,7 @@ describe('User', function(){
     })
       .expect('status', 401)
   })
-  it('admin user should get token', function() {
-    // Return the Frisby.js Spec in the 'it()' (just like a promise)
-    return frisby.post(host +'/login', {
-      username: 'admin',
-      password: 'admin'
-
-    })
-      .expect('status', 200)
-      .expect('jsonTypesStrict', {
-        code: Joi.number(),
-        expire: Joi.string(),
-        token: Joi.string().min(20).max(180)
-      })
-  })
-
-  it('admin user should create user successfully at first time', function(done) {
+  it('admin user should get token', function(done) {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
     return frisby.post(host +'/login', {
       username: 'admin',
@@ -53,49 +40,88 @@ describe('User', function(){
         token: Joi.string().min(20).max(180)
       })
       .then(function(res){
-        var resToken = res.json.token
-        //console.log('resToken', resToken)
-        return frisby.post(hostApi +'/users', {
-          headers: {
-            Authorization: "Bearer " + resToken,
-          },
-          body : {
-            username: 'test',
-            password: 'test',
-          }
-        })
-          .expect('status', 201)
+        token = res.json.token
+      })
+      .done(done)
+  })
+
+  it('admin user should create user successfully at first time', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.post(hostApi +'/users', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body : {
+        username: 'test',
+        password: 'test',
+      }
+    })
+      .expect('status', 201)
+      .expect('jsonTypesStrict', {
+        data: Joi.string()
+      })
+      .then(function(res){
+        testUserId = res.json.data
       })
       .done(done)
   })
   it('admin user should create existing user failed at second time', function(done) {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
-    return frisby.post(host +'/login', {
-      username: 'admin',
-      password: 'admin'
-
+    return frisby.post(hostApi +'/users', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body : {
+        username: 'test',
+        password: 'test',
+      }
+    })
+      .expect('status', 500)
+      .expect('bodyContains', 'User name exist:')
+      .done(done)
+  })
+  it('admin user should able to get the test user', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.get(hostApi +'/users/' + testUserId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      }
     })
       .expect('status', 200)
-      .expect('jsonTypesStrict', {
-        code: Joi.number(),
-        expire: Joi.string(),
-        token: Joi.string().min(20).max(180)
-      })
+      .expect('bodyContains', 'test')
+      .done(done)
+  })
+  it('admin user should able to update the test user', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.put(hostApi +'/users/' + testUserId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body : {
+        username: 'test1',
+        password: 'test1',
+      }
+    })
+      .expect('status', 200)
       .then(function(res){
-        var resToken = res.json.token
-        //console.log('resToken', resToken)
-        return frisby.post(hostApi +'/users', {
+        return frisby.get(hostApi +'/users/' + testUserId, {
           headers: {
-            Authorization: "Bearer " + resToken,
-          },
-          body : {
-            username: 'test',
-            password: 'test',
+            Authorization: "Bearer " + token,
           }
         })
-          .expect('status', 500)
-          .expect('bodyContains', 'User name exist:')
+          .expect('status', 200)
+          .expect('bodyContains', 'test1')
+          .done(done)
       })
+  })
+  it('admin user should able to delete the test user', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.delete(hostApi +'/users/' + testUserId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      }
+    })
+      .expect('status', 204)
       .done(done)
   })
 })

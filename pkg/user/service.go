@@ -7,7 +7,7 @@ type Service interface {
 	Delete(id string) error
 	GetAll() ([]*User, error)
 	GetByID(id string) (*User, error)
-	Store(u *User) error
+	Store(u *User) (string, error)
 	Update(u *User) error
 }
 
@@ -34,7 +34,7 @@ func (svc *userService) GetByID(id string) (*User, error) {
 	return svc.repo.GetByID(id)
 }
 
-func (svc *userService) Store(u *User) error {
+func (svc *userService) Store(u *User) (string, error) {
 	u.Password = helper.HashAndSalt([]byte(u.Password))
 	return svc.repo.Store(u)
 }

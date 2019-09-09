@@ -63,18 +63,16 @@ func (u *userRepo) GetByID(id string) (*user.User, error) {
 	return user, nil
 }
 
-func (u *userRepo) Store(usr *user.User) error {
+func (u *userRepo) Store(usr *user.User) (string, error) {
 	u.log.Debugf("creating the user with email : %v", usr.Email)
 
 	if UserIsExist(u.db, usr.UserName) {
-		return fmt.Errorf("[userRepo.Store()] User name exist: %s", usr.UserName)
+		return "", fmt.Errorf("[userRepo.Store()] User name exist: %s", usr.UserName)
 	}
-	err := u.db.Create(&usr).Error
-	if err != nil {
-		errMsg := fmt.Sprintf("[userRepo.Store()] error when creating the user")
-		return errors.Wrap(err, errMsg)
-	}
-	return nil
+  if err := u.db.Create(&usr).Error; err != nil {
+    return "", errors.Wrap(err, "[userRepo.Store()] error when creating the user")
+  }
+  return usr.ID, nil
 }
 
 func (u *userRepo) Update(usr *user.User) error {

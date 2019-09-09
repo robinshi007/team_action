@@ -62,15 +62,18 @@ func (u *userCtrl) Store(ctx *gin.Context) {
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	if err := u.svc.Store(&up.User{
+	id, err := u.svc.Store(&up.User{
 		UserName: user.UserName,
 		Password: user.Password,
-	}); err != nil {
+	});
+  if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.Status(http.StatusCreated)
+	ctx.JSON(http.StatusCreated, gin.H{
+    "data": id,
+  })
 }
 
 func (u *userCtrl) Update(ctx *gin.Context) {
