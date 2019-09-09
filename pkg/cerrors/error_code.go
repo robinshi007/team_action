@@ -22,34 +22,27 @@ import (
 //	SessionInvalid
 //	InvalidEmailOrPassword
 
-// ErrorCode is error type to used
-type ErrorCode string
-
-func (ec ErrorCode) String() string {
-	return string(ec)
-}
-
 // Customed error codes
 const (
-	AppServerError     ErrorCode = "1001"
-	InvalidLocale      ErrorCode = "1002"
-	InvalidTimezone    ErrorCode = "1003"
-	ExceedRequestLimit ErrorCode = "1004"
+	AppServerError     string = "1001"
+	InvalidLocale      string = "1002"
+	InvalidTimezone    string = "1003"
+	ExceedRequestLimit string = "1004"
 
-	HTTPInvalidHeaderOrParam ErrorCode = "1101"
-	HTTPNotFound             ErrorCode = "1102"
-	HTTPInternalError        ErrorCode = "1103"
+	HTTPInvalidHeaderOrParam string = "1101"
+	HTTPNotFound             string = "1102"
+	HTTPInternalError        string = "1103"
 
-	AuthenticationFailure      ErrorCode = "1201"
-	AuthenticationParamMissing ErrorCode = "1202"
-	UnauthorizedAccess         ErrorCode = "1203"
+	AuthenticationFailure      string = "1201"
+	AuthenticationParamMissing string = "1202"
+	UnauthorizedAccess         string = "1203"
 
-	SessionExpired         ErrorCode = "1301"
-	SessionInvalid         ErrorCode = "1302"
-	InvalidEmailOrPassword ErrorCode = "1303"
+	SessionExpired         string = "1301"
+	SessionInvalid         string = "1302"
+	InvalidEmailOrPassword string = "1303"
 )
 
-var codeStatusMap = map[ErrorCode]int{
+var codeStatusMap = map[string]int{
 	AppServerError:     http.StatusInternalServerError,
 	InvalidLocale:      http.StatusInternalServerError,
 	InvalidTimezone:    http.StatusInternalServerError,
@@ -69,11 +62,11 @@ var codeStatusMap = map[ErrorCode]int{
 }
 
 // GetHTTPStatus returns http status mapped to customer error
-func GetHTTPStatus(code ErrorCode) int {
+func GetHTTPStatus(code string) int {
 	return codeStatusMap[code]
 }
 
-var codeMessageMap = map[ErrorCode]string{
+var codeMessageMap = map[string]string{
 	AppServerError:     "App server error ",
 	InvalidLocale:      "Invalid locale",
 	InvalidTimezone:    "Invalid timezone",
@@ -93,6 +86,6 @@ var codeMessageMap = map[ErrorCode]string{
 }
 
 // GetErrorMessage -
-func GetErrorMessage(code ErrorCode) string {
+func GetErrorMessage(code string) string {
 	return codeMessageMap[code]
 }

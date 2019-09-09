@@ -32,7 +32,8 @@ func (ds *dserver) InitMiddleware() {
 	// setup global middeware
 	ds.router.Use(gin.Logger())
 	ds.router.Use(gin.Recovery())
-	ds.router.Use(handler.InternalServerErrRecover())
+	ds.router.Use(handler.ErrorRecover())
+	ds.router.Use(handler.ErrorHandling())
 }
 
 func (ds *dserver) InitDB() error {

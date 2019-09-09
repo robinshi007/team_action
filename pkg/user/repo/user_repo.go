@@ -1,10 +1,10 @@
 package repo
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 
 	"team_action/pkg/logger"
 	"team_action/pkg/user"
@@ -22,11 +22,6 @@ func NewUserRepo(db *gorm.DB, log logger.LogInfoFormat) user.Repo {
 
 // UserIsExist -
 func UserIsExist(db *gorm.DB, name string) bool {
-	//	var db *gorm.DB
-	//	d := di.BuildContainer()
-	//	if err := d.Invoke(func(d *gorm.DB) { db = d }); err != nil {
-	//		return false
-	//	}
 	var user user.User
 	db.Where("user_name = ?", name).First(&user)
 	if user.ID != "" {
@@ -38,10 +33,9 @@ func UserIsExist(db *gorm.DB, name string) bool {
 func (u *userRepo) Delete(id string) error {
 	u.log.Debugf("deleting the user with id : %s", id)
 
-	if u.db.Delete(&user.User{}, "user_id = ?", id).Error != nil {
-		errMsg := fmt.Sprintf("error while deleting the user with id : %s", id)
-		u.log.Errorf(errMsg)
-		return errors.New(errMsg)
+	if err := u.db.Delete(&user.User{}, "user_id = ?", id).Error; err != nil {
+		errMsg := fmt.Sprintf("[userRepo.Delete()] with id : %s", id)
+		return errors.Wrap(err, errMsg)
 	}
 	return nil
 }
@@ -52,8 +46,7 @@ func (u *userRepo) GetAll() ([]*user.User, error) {
 	users := make([]*user.User, 0)
 	err := u.db.Find(&users).Error
 	if err != nil {
-		u.log.Debug("no single user found")
-		return nil, err
+		return nil, errors.Wrap(err, "[userRepo.GetALL()]")
 	}
 	return users, nil
 }
@@ -64,8 +57,8 @@ func (u *userRepo) GetByID(id string) (*user.User, error) {
 	user := &user.User{}
 	err := u.db.Where("user_id = ?", id).First(&user).Error
 	if err != nil {
-		u.log.Errorf("user not found with id : %s, reason : %v", id, err)
-		return nil, err
+		errMsg := fmt.Sprintf("[userRepo.GetByID()] with id : %s", id)
+		return nil, errors.Wrap(err, errMsg)
 	}
 	return user, nil
 }
@@ -74,12 +67,12 @@ func (u *userRepo) Store(usr *user.User) error {
 	u.log.Debugf("creating the user with email : %v", usr.Email)
 
 	if UserIsExist(u.db, usr.UserName) {
-		return errors.New(fmt.Sprintf("User name exist: %s", usr.UserName))
+		return fmt.Errorf("[userRepo.Store()] User name exist: %s", usr.UserName)
 	}
 	err := u.db.Create(&usr).Error
 	if err != nil {
-		u.log.Errorf("error while creating the user, reason : %v", err)
-		return err
+		errMsg := fmt.Sprintf("[userRepo.Store()] error when creating the user")
+		return errors.Wrap(err, errMsg)
 	}
 	return nil
 }
@@ -89,8 +82,8 @@ func (u *userRepo) Update(usr *user.User) error {
 
 	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, FirstName: usr.FirstName, LastName: usr.LastName, Password: usr.Password, Picture: usr.Picture, PhoneNumber: usr.PhoneNumber}).Error
 	if err != nil {
-		u.log.Errorf("error while updating the user, reason : %v", err)
-		return err
+		errMsg := fmt.Sprintf("[userRepo.Update()] error while updating the user")
+		return errors.Wrap(err, errMsg)
 	}
 	return nil
 }

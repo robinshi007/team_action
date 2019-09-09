@@ -1,18 +1,20 @@
 package handler
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 
 	"team_action/pkg/cerrors"
-	"team_action/pkg/web/types"
 )
 
-// NotFoundResponse - 404
+// NotFoundResponse - 404 error
 func NotFoundResponse(c *gin.Context) {
-	HandleErrorCodeRepsonse("1102", c)
+	HandlePublicError(&cerrors.CustomError{
+		ErrorCode: "1102",
+		Errors:    []string{cerrors.GetErrorMessage("1102")},
+	}, c)
 }
 
 // XHR check if is XMLHttpRequest
@@ -20,84 +22,67 @@ func XHR(c *gin.Context) bool {
 	return strings.ToLower(c.Request.Header.Get("X-Requested-With")) == "xmlhttprequest"
 }
 
-// InternalServerErrRecover - 50x, please use as gin middeware
-func InternalServerErrRecover() gin.HandlerFunc {
+// ErrorRecover -  50x for un catched painc error
+func ErrorRecover() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
 				// check if is XHR
 				if XHR(c) {
-					HandleErrorCodeCustomRepsonse("1102", []string{"Oops! Internal error with XMLHttpRequest, please try again."}, c)
+					HandlePublicError(&cerrors.CustomError{
+						ErrorCode: "1103",
+						Errors:    []string{"Oops! something went wrong with XMLHttpRequest, please contact system admin."},
+					}, c)
 					return
 				}
-				HandleErrorCodeRepsonse("1102", c)
+				HandlePublicError(&cerrors.CustomError{
+					ErrorCode: "1103",
+					Errors:    []string{"Oops! something went wrong, please contact system admin."},
+				}, c)
 			}
 		}(c)
-
 		c.Next()
 	}
 }
 
-// HandleErrorRepsonse -
-func HandleErrorRepsonse(err error, ctx *gin.Context) {
-	if err != nil {
-		ge, ok := errors.Cause(err).(cerrors.GeneralError)
-		if ok {
-			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
-		}
-		ie, ok := errors.Cause(err).(cerrors.InternalError)
-		if ok && ie.Internal() {
-			// log the info
-		} else {
-			// log the info
-		}
-		HandleErrorCodeCustomRepsonse("1103", []string{err.Error()}, ctx)
-	}
-}
-func HandleBadRequestRepsonse(err error, ctx *gin.Context) {
-	if err != nil {
-		ge, ok := errors.Cause(err).(cerrors.GeneralError)
-		if ok {
-			HandleErrorCodeCustomRepsonse(string(ge.Code()), ge.Messages(), ctx)
-		}
-		ie, ok := errors.Cause(err).(cerrors.InternalError)
-		if ok && ie.Internal() {
-			// log the info
-		} else {
-			// log the info
-		}
-		HandleErrorCodeCustomRepsonse("1101", []string{err.Error()}, ctx)
-	}
+// HandlePublicError -
+func HandlePublicError(err cerrors.GeneralError, ctx *gin.Context) {
+	HTTPCode := cerrors.GetHTTPStatus(err.Code())
+	ctx.JSON(HTTPCode, err)
 }
 
-// HandleErrorCodeRepsonse -
-func HandleErrorCodeRepsonse(codeStr string, ctx *gin.Context) {
-	var code cerrors.ErrorCode = cerrors.ErrorCode(codeStr)
-	ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
-		Code:   code,
-		Errors: []string{cerrors.GetErrorMessage(code)},
+// HandleInternalError -
+func HandleInternalError(err cerrors.InternalError, ctx *gin.Context) {
+	// log the message
+	ctx.JSON(http.StatusInternalServerError, gin.H{
+		"errors": []string{cerrors.GetErrorMessage("1103")},
 	})
 }
 
-// HandleErrorCodeCustomRepsonse -
-func HandleErrorCodeCustomRepsonse(codeStr string, messages []string, ctx *gin.Context) {
-	var code cerrors.ErrorCode = cerrors.ErrorCode(codeStr)
-	if len(messages) >= 1 {
-		strs := strings.Split(messages[0], "\n")
-		if len(strs) > 1 {
-			var res []string
-			for _, v := range strs {
-				res = append(res, v)
-			}
-			ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
-				Code:   code,
-				Errors: res,
-			})
+// ErrorHandling - middeware to handling errors
+func ErrorHandling() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Next()
+		err := ctx.Errors.Last()
+		if err == nil {
 			return
 		}
+		// public error
+		if gError, ok := err.Err.(cerrors.GeneralError); ok {
+			HandlePublicError(gError, ctx)
+			return
+		}
+		// internal error
+		if iError, ok := err.Err.(cerrors.InternalError); ok {
+			HandleInternalError(iError, ctx)
+			return
+		}
+
+		// logger the info
+		//fmt.Println("Oops, unkown error occurs")
+		HandlePublicError(&cerrors.ParamError{
+			ErrorCode: "1103",
+			Errors:    []string{"Oops! something went wrong, please contact system admin."},
+		}, ctx)
 	}
-	ctx.JSON(cerrors.GetHTTPStatus(code), &types.ErrorResponse{
-		Code:   code,
-		Errors: messages,
-	})
 }

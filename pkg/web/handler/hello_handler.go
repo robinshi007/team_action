@@ -8,6 +8,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
+	"team_action/pkg/cerrors"
 	u "team_action/pkg/user"
 	"team_action/pkg/user/dto"
 )
@@ -41,7 +42,7 @@ func (h *helloCtrl) Crash(ctx *gin.Context) {
 		panic("panic crash")
 	} else {
 		// expected error
-		HandleErrorCodeCustomRepsonse("1103", []string{"Expected Error for testing"}, ctx)
+		ctx.Error(cerrors.NewCustomError("1103", []string{"Expected Error for testing"}))
 		return
 	}
 }
