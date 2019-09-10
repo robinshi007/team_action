@@ -6,7 +6,7 @@ import (
 
 	"team_action/di"
 	"team_action/pkg/logger"
-	"team_action/pkg/web"
+	"team_action/pkg/web/server"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,13 +27,6 @@ func run() error {
 		l = log
 	})
 
-	svr := web.NewServer(g, d, l)
-
-	svr.InitMiddleware()
-	svr.InitRoutes()
-
-	if err := svr.InitDB(); err != nil {
-		return err
-	}
+	svr := server.NewServer(g, d, l)
 	return svr.Start()
 }

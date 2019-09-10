@@ -1,4 +1,4 @@
-package web
+package server
 
 import (
 	"fmt"
@@ -29,7 +29,19 @@ func NewServer(e *gin.Engine, c *dig.Container, l logger.LogInfoFormat) *DServer
 // Start -
 func (ds *DServer) Start() error {
 	var cfg *config.Config
-	if err := ds.cont.Invoke(func(c *config.Config) { cfg = c }); err != nil {
+	if err := ds.cont.Invoke(func(c *config.Config) {
+		cfg = c
+	}); err != nil {
+		return err
+	}
+
+	// init middeware
+	ds.initMiddleware()
+	// init routes
+	ds.initRoutes()
+
+	// init database
+	if err := ds.initDB(); err != nil {
 		return err
 	}
 	return ds.router.Run(fmt.Sprintf(":%s", cfg.Port))

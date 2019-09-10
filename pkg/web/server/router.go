@@ -1,4 +1,4 @@
-package web
+package server
 
 import (
 	"team_action/pkg/note"
@@ -11,15 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InitRoutes -
-func (ds *DServer) InitRoutes() {
+// init Routes -
+func (ds *DServer) initRoutes() {
 	ds.globalRoutes(ds.router)
 
 	apiV1 := ds.router.Group("api/v1")
 	ds.healthRoutes(apiV1)
 	ds.userRoutes(apiV1)
 
-	noteAppV1 := apiV1.Group("/noteapps")
+	noteAppV1 := apiV1.Group("/noteapp")
 	ds.noteAppRoutes(noteAppV1)
 }
 

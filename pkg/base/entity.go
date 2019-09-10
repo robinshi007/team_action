@@ -12,7 +12,7 @@ type Entity struct {
 	ID        uuid.UUID  `json:"id" gorm:"type:uuid;column:id;primary_key"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at" sql:"index"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
 
 // BeforeCreate will set a UUID rather then numeric ID

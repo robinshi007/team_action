@@ -1,4 +1,4 @@
-package web
+package server
 
 import (
 	"github.com/jinzhu/gorm"
@@ -7,8 +7,8 @@ import (
 	"team_action/pkg/user"
 )
 
-// InitDB -
-func (ds *DServer) InitDB() error {
+// init database -
+func (ds *DServer) initDB() error {
 	var db *gorm.DB
 	if err := ds.cont.Invoke(func(d *gorm.DB) { db = d }); err != nil {
 		return err
@@ -18,10 +18,10 @@ func (ds *DServer) InitDB() error {
 	//db.Exec("SET search_path TO team_action_dev")
 	db.AutoMigrate(&user.User{})
 
-	db.AutoMigrate(&note.Note{})
-	db.AutoMigrate(&note.Category{})
-	db.Model(&user.User{}).AddIndex("idx_user_name", "user_name")
-	db.Model(&user.User{}).AddUniqueIndex("idx_user_name", "user_name")
+	db.AutoMigrate(
+		&note.Note{},
+		&note.Category{},
+	)
 
 	return nil
 }

@@ -1,4 +1,4 @@
-package types
+package web
 
 // SuccessResponse -
 type SuccessResponse struct {

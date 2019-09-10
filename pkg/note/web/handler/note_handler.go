@@ -12,7 +12,7 @@ import (
 	"team_action/pkg/note"
 	ne "team_action/pkg/note"
 	"team_action/pkg/note/dto"
-	"team_action/pkg/web/types"
+	"team_action/pkg/web"
 )
 
 type noteCtrl struct {
@@ -32,7 +32,7 @@ func (n *noteCtrl) GetAll(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: notes,
 	})
 }
@@ -51,7 +51,7 @@ func (n *noteCtrl) GetByID(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: note,
 	})
 }

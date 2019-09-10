@@ -12,7 +12,7 @@ import (
 	"team_action/pkg/note"
 	ne "team_action/pkg/note"
 	"team_action/pkg/note/dto"
-	"team_action/pkg/web/types"
+	"team_action/pkg/web"
 )
 
 // CategoryCtrl -
@@ -34,7 +34,7 @@ func (n *CategoryCtrl) GetAll(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: categories,
 	})
 }
@@ -54,7 +54,7 @@ func (n *CategoryCtrl) GetByID(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: category,
 	})
 }

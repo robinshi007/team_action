@@ -11,7 +11,7 @@ import (
 	"team_action/pkg/user"
 	ue "team_action/pkg/user"
 	"team_action/pkg/user/dto"
-	"team_action/pkg/web/types"
+	"team_action/pkg/web"
 )
 
 type userCtrl struct {
@@ -31,7 +31,7 @@ func (u *userCtrl) GetAll(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: users,
 	})
 }
@@ -50,7 +50,7 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, &types.SuccessResponse{
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
 		Data: user,
 	})
 }
