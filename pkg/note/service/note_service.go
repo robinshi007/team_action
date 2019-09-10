@@ -6,11 +6,11 @@ import (
 
 // NoteService -
 type NoteService struct {
-	repo note.Repo
+	repo note.INoteRepo
 }
 
 // NewNoteService --
-func NewNoteService(repo note.Repo) note.Service {
+func NewNoteService(repo note.INoteRepo) note.INoteService {
 	return &NoteService{
 		repo: repo,
 	}

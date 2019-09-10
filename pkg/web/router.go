@@ -11,16 +11,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ds *dserver) InitRoutes() {
+// InitRoutes -
+func (ds *DServer) InitRoutes() {
 	ds.globalRoutes(ds.router)
 
 	apiV1 := ds.router.Group("api/v1")
 	ds.healthRoutes(apiV1)
 	ds.userRoutes(apiV1)
-	ds.noteRoutes(apiV1)
+
+	noteAppV1 := apiV1.Group("/noteapps")
+	ds.noteAppRoutes(noteAppV1)
 }
 
-func (ds *dserver) globalRoutes(gr *gin.Engine) {
+func (ds *DServer) globalRoutes(gr *gin.Engine) {
 	jwtMW, err := mw.NewJWT("test zone", "secret key")
 	if err != nil {
 		ds.logger.Info("JWT Error:" + err.Error())
@@ -39,14 +42,14 @@ func (ds *dserver) globalRoutes(gr *gin.Engine) {
 	gr.NoRoute(handler.NotFoundResponse)
 }
 
-func (ds *dserver) healthRoutes(api *gin.RouterGroup) {
+func (ds *DServer) healthRoutes(api *gin.RouterGroup) {
 	healthRoutes := api.Group("/health")
 	{
 		h := handler.NewHealthCtrl()
 		healthRoutes.GET("/", h.Ping)
 	}
 }
-func (ds *dserver) userRoutes(api *gin.RouterGroup) {
+func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 	jwtMW, err := mw.NewJWT("test zone", "secret key")
 	if err != nil {
 		ds.logger.Info("JWT Error:" + err.Error())
@@ -70,27 +73,43 @@ func (ds *dserver) userRoutes(api *gin.RouterGroup) {
 		}
 	}
 }
-func (ds *dserver) noteRoutes(api *gin.RouterGroup) {
+func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
 	//	jwtMW, err := mw.NewJWT("test zone", "secret key")
 	//	if err != nil {
 	//		ds.logger.Info("JWT Error:" + err.Error())
 	//	}
-	noteRoutes := api.Group("/notes")
+	noteRoutes := app.Group("/notes")
 	{
-		var noteSvc note.Service
-		ds.cont.Invoke(func(u note.Service) {
+		var noteSvc note.INoteService
+		ds.cont.Invoke(func(u note.INoteService) {
 			noteSvc = u
 		})
+		nh := note_handler.NewNoteCtrl(ds.logger, noteSvc)
 
-		n := note_handler.NewNoteCtrl(ds.logger, noteSvc)
-
-		noteRoutes.GET("/", n.GetAll)
-		noteRoutes.GET("/:id", n.GetByID)
+		noteRoutes.GET("/", nh.GetAll)
+		noteRoutes.GET("/:id", nh.GetByID)
 		//		noteRoutes.Use(jwtMW.MiddlewareFunc())
 		//		{
-		noteRoutes.POST("/", n.Store)
-		noteRoutes.PUT("/:id", n.Update)
-		noteRoutes.DELETE("/:id", n.Delete)
+		noteRoutes.POST("/", nh.Store)
+		noteRoutes.PUT("/:id", nh.Update)
+		noteRoutes.DELETE("/:id", nh.Delete)
+		//		}
+	}
+	categoryRoutes := app.Group("/categories")
+	{
+		var categorySvc note.ICategoryService
+		ds.cont.Invoke(func(u note.ICategoryService) {
+			categorySvc = u
+		})
+		ch := note_handler.NewCategoryCtrl(ds.logger, categorySvc)
+
+		categoryRoutes.GET("/", ch.GetAll)
+		categoryRoutes.GET("/:id", ch.GetByID)
+		//		categoryRoutes.Use(jwtMW.MiddlewareFunc())
+		//		{
+		categoryRoutes.POST("/", ch.Store)
+		categoryRoutes.PUT("/:id", ch.Update)
+		categoryRoutes.DELETE("/:id", ch.Delete)
 		//		}
 	}
 }

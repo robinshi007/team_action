@@ -39,9 +39,12 @@ func BuildContainer() *dig.Container {
 		// user
 		container.Provide(user_repo.NewUserRepo)
 		container.Provide(user.NewUserService)
-		// note
+
+		// note app
 		container.Provide(note_repo.NewNoteRepo)
 		container.Provide(note_service.NewNoteService)
+		container.Provide(note_repo.NewCategoryRepo)
+		container.Provide(note_service.NewCategoryService)
 
 		inited = true
 	}

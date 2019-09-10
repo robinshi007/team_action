@@ -15,29 +15,32 @@ import (
 	"team_action/pkg/web/types"
 )
 
-type noteCtrl struct {
+// CategoryCtrl -
+type CategoryCtrl struct {
 	log logger.LogInfoFormat
-	svc note.INoteService
+	svc note.ICategoryService
 }
 
-// NewNoteCtrl -
-func NewNoteCtrl(log logger.LogInfoFormat, svc note.INoteService) *noteCtrl {
-	return &noteCtrl{log, svc}
+// NewCategoryCtrl -
+func NewCategoryCtrl(log logger.LogInfoFormat, svc note.ICategoryService) *CategoryCtrl {
+	return &CategoryCtrl{log, svc}
 }
 
-func (n *noteCtrl) GetAll(ctx *gin.Context) {
-	notes, err := n.svc.GetAll()
+// GetAll -
+func (n *CategoryCtrl) GetAll(ctx *gin.Context) {
+	categories, err := n.svc.GetAll()
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &types.SuccessResponse{
-		Data: notes,
+		Data: categories,
 	})
 }
 
-func (n *noteCtrl) GetByID(ctx *gin.Context) {
+// GetByID -
+func (n *CategoryCtrl) GetByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
@@ -45,27 +48,27 @@ func (n *noteCtrl) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	note, err := n.svc.GetByID(id)
+	category, err := n.svc.GetByID(id)
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &types.SuccessResponse{
-		Data: note,
+		Data: category,
 	})
 }
 
-func (n *noteCtrl) Store(ctx *gin.Context) {
-	var note dto.NewNote
-	if err := ctx.ShouldBindJSON(&note); err != nil {
+// Store -
+func (n *CategoryCtrl) Store(ctx *gin.Context) {
+	var category dto.NewCategory
+	if err := ctx.ShouldBindJSON(&category); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	id, err := n.svc.Store(&ne.Note{
-		Title: note.Title,
-		Body:  note.Body,
+	id, err := n.svc.Store(&ne.Category{
+		Name: category.Name,
 	})
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
@@ -77,7 +80,8 @@ func (n *noteCtrl) Store(ctx *gin.Context) {
 	})
 }
 
-func (n *noteCtrl) Update(ctx *gin.Context) {
+// Update -
+func (n *CategoryCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	uid, err := uuid.FromString(id)
 	if err != nil {
@@ -86,16 +90,15 @@ func (n *noteCtrl) Update(ctx *gin.Context) {
 		return
 	}
 
-	var note dto.EditNote
-	if err := ctx.ShouldBindJSON(&note); err != nil {
+	var category dto.EditCategory
+	if err := ctx.ShouldBindJSON(&category); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	if err := n.svc.Update(&ne.Note{
+	if err := n.svc.Update(&ne.Category{
 		Entity: base.Entity{ID: uid},
-		Title:  note.Title,
-		Body:   note.Body,
+		Name:   category.Name,
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
@@ -104,7 +107,8 @@ func (n *noteCtrl) Update(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func (n *noteCtrl) Delete(ctx *gin.Context) {
+// Delete -
+func (n *CategoryCtrl) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))

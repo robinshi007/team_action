@@ -1,0 +1,17 @@
+package web
+
+import (
+	"github.com/gin-gonic/gin"
+
+	"team_action/pkg/web/handler"
+)
+
+// InitMiddleware -
+func (ds *DServer) InitMiddleware() {
+	// setup global middeware
+	ds.router.Use(gin.Logger())
+	ds.router.Use(gin.Recovery())
+	ds.router.Use(handler.ErrorRecover())
+	ds.router.Use(handler.ErrorHandling())
+}
+

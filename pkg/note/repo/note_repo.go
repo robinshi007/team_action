@@ -5,6 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	uuid "github.com/satori/go.uuid"
 
 	"team_action/pkg/logger"
 	"team_action/pkg/note"
@@ -16,15 +17,16 @@ type noteRepo struct {
 }
 
 // NewNoteRepo -
-func NewNoteRepo(db *gorm.DB, log logger.LogInfoFormat) note.Repo {
+func NewNoteRepo(db *gorm.DB, log logger.LogInfoFormat) note.INoteRepo {
 	return &noteRepo{db, log}
 }
 
 // NoteIsExist -
 func NoteIsExist(db *gorm.DB, title string) bool {
 	var note note.Note
+	var emptyUUID = uuid.UUID{}
 	db.Where("title= ?", title).First(&note)
-	if note.ID != "" {
+	if note.ID != emptyUUID {
 		return true
 	}
 	return false
@@ -33,7 +35,7 @@ func NoteIsExist(db *gorm.DB, title string) bool {
 func (u *noteRepo) Delete(id string) error {
 	u.log.Debugf("deleting the note with id : %s", id)
 
-	if err := u.db.Delete(&note.Note{}, "note_id = ?", id).Error; err != nil {
+	if err := u.db.Delete(&note.Note{}, "id = ?", id).Error; err != nil {
 		errMsg := fmt.Sprintf("[noteRepo.Delete()] with id : %s", id)
 		return errors.Wrap(err, errMsg)
 	}
@@ -55,7 +57,7 @@ func (u *noteRepo) GetByID(id string) (*note.Note, error) {
 	u.log.Debugf("get note details by id : %s", id)
 
 	note := &note.Note{}
-	err := u.db.Where("note_id = ?", id).First(&note).Error
+	err := u.db.Where("id = ?", id).First(&note).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[noteRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)
@@ -67,16 +69,16 @@ func (u *noteRepo) Store(n *note.Note) (string, error) {
 	u.log.Debugf("creating the note with title: %v", n.Title)
 
 	if NoteIsExist(u.db, n.Title) {
-		return "", fmt.Errorf("[noteRepo.Store()] note title exist: %s", n.Title)
+		return uuid.UUID{}.String(), fmt.Errorf("[noteRepo.Store()] note title exist: %s", n.Title)
 	}
 	if err := u.db.Create(&n).Error; err != nil {
-		return "", errors.Wrap(err, "[noteRepo.Store()] error when creating the note")
+		return uuid.UUID{}.String(), errors.Wrap(err, "[noteRepo.Store()] error when creating the note")
 	}
-	return n.ID, nil
+	return n.ID.String(), nil
 }
 
 func (u *noteRepo) Update(n *note.Note) error {
-	u.log.Debugf("updating the note, note_id : %v", n.ID)
+	u.log.Debugf("updating the note, id : %v", n.ID)
 
 	err := u.db.Model(&n).Updates(note.Note{Title: n.Title, Body: n.Body}).Error
 	if err != nil {
