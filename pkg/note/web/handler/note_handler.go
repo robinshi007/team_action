@@ -8,35 +8,35 @@ import (
 
 	"team_action/pkg/cerrors"
 	"team_action/pkg/logger"
-	"team_action/pkg/user"
-	ue "team_action/pkg/user"
-	"team_action/pkg/user/dto"
+	"team_action/pkg/note"
+	ne "team_action/pkg/note"
+	"team_action/pkg/note/dto"
 	"team_action/pkg/web/types"
 )
 
-type userCtrl struct {
+type noteCtrl struct {
 	log logger.LogInfoFormat
-	svc user.Service
+	svc note.Service
 }
 
-// NewUserCtrl -
-func NewUserCtrl(log logger.LogInfoFormat, svc user.Service) *userCtrl {
-	return &userCtrl{log, svc}
+// NewNoteCtrl -
+func NewNoteCtrl(log logger.LogInfoFormat, svc note.Service) *noteCtrl {
+	return &noteCtrl{log, svc}
 }
 
-func (u *userCtrl) GetAll(ctx *gin.Context) {
-	users, err := u.svc.GetAll()
+func (n *noteCtrl) GetAll(ctx *gin.Context) {
+	notes, err := n.svc.GetAll()
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &types.SuccessResponse{
-		Data: users,
+		Data: notes,
 	})
 }
 
-func (u *userCtrl) GetByID(ctx *gin.Context) {
+func (n *noteCtrl) GetByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
@@ -44,27 +44,27 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	user, err := u.svc.GetByID(id)
+	note, err := n.svc.GetByID(id)
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &types.SuccessResponse{
-		Data: user,
+		Data: note,
 	})
 }
 
-func (u *userCtrl) Store(ctx *gin.Context) {
-	var user dto.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
+func (n *noteCtrl) Store(ctx *gin.Context) {
+	var note dto.NewNote
+	if err := ctx.ShouldBindJSON(&note); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	id, err := u.svc.Store(&ue.User{
-		UserName: user.UserName,
-		Password: user.Password,
+	id, err := n.svc.Store(&ne.Note{
+		Title: note.Title,
+		Body:  note.Body,
 	})
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
@@ -76,7 +76,7 @@ func (u *userCtrl) Store(ctx *gin.Context) {
 	})
 }
 
-func (u *userCtrl) Update(ctx *gin.Context) {
+func (n *noteCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
@@ -84,16 +84,15 @@ func (u *userCtrl) Update(ctx *gin.Context) {
 		return
 	}
 
-	var user dto.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
+	var note dto.EditNote
+	if err := ctx.ShouldBindJSON(&note); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	if err := u.svc.Update(&ue.User{
-		ID:       id,
-		UserName: user.UserName,
-		Password: user.Password,
+	if err := n.svc.Update(&ne.Note{
+		Title: note.Title,
+		Body:  note.Body,
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)
@@ -102,14 +101,14 @@ func (u *userCtrl) Update(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func (u *userCtrl) Delete(ctx *gin.Context) {
+func (n *noteCtrl) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
-	if err := u.svc.Delete(id); err != nil {
+	if err := n.svc.Delete(id); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		return
 	}

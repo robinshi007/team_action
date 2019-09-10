@@ -3,6 +3,8 @@ package di
 import (
 	"team_action/pkg/config"
 	"team_action/pkg/logger"
+	note_repo "team_action/pkg/note/repo"
+	note_service "team_action/pkg/note/service"
 	"team_action/pkg/sql"
 	"team_action/pkg/user"
 	user_repo "team_action/pkg/user/repo"
@@ -37,6 +39,9 @@ func BuildContainer() *dig.Container {
 		// user
 		container.Provide(user_repo.NewUserRepo)
 		container.Provide(user.NewUserService)
+		// note
+		container.Provide(note_repo.NewNoteRepo)
+		container.Provide(note_service.NewNoteService)
 
 		inited = true
 	}

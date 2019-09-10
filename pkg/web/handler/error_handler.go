@@ -11,10 +11,10 @@ import (
 
 // NotFoundResponse - 404 error
 func NotFoundResponse(c *gin.Context) {
-	HandlePublicError(&cerrors.CustomError{
-		ErrorCode: "1102",
-		Errors:    []string{cerrors.GetErrorMessage("1102")},
-	}, c)
+	HandlePublicError(cerrors.NewCustomError(
+		"1102",
+		[]string{cerrors.GetErrorMessage("1102")},
+	), c)
 }
 
 // XHR check if is XMLHttpRequest
@@ -29,16 +29,16 @@ func ErrorRecover() gin.HandlerFunc {
 			if rec := recover(); rec != nil {
 				// check if is XHR
 				if XHR(c) {
-					HandlePublicError(&cerrors.CustomError{
-						ErrorCode: "1103",
-						Errors:    []string{"Oops! something went wrong with XMLHttpRequest, please contact system admin."},
-					}, c)
+					HandlePublicError(cerrors.NewCustomError(
+						"1103",
+						[]string{"Oops! something went wrong with XMLHttpRequest, please contact system admin."},
+					), c)
 					return
 				}
-				HandlePublicError(&cerrors.CustomError{
-					ErrorCode: "1103",
-					Errors:    []string{"Oops! something went wrong, please contact system admin."},
-				}, c)
+				HandlePublicError(cerrors.NewCustomError(
+					"1103",
+					[]string{"Oops! something went wrong, please contact system admin."},
+				), c)
 			}
 		}(c)
 		c.Next()
@@ -80,9 +80,9 @@ func ErrorHandling() gin.HandlerFunc {
 
 		// logger the info
 		//fmt.Println("Oops, unkown error occurs")
-		HandlePublicError(&cerrors.ParamError{
-			ErrorCode: "1103",
-			Errors:    []string{"Oops! something went wrong, please contact system admin."},
-		}, ctx)
+		HandlePublicError(cerrors.NewCustomError(
+			"1103",
+			[]string{"Oops! something went wrong, please contact system admin."},
+		), ctx)
 	}
 }

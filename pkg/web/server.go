@@ -9,6 +9,7 @@ import (
 
 	"team_action/pkg/config"
 	"team_action/pkg/logger"
+	"team_action/pkg/note"
 	"team_action/pkg/user"
 	"team_action/pkg/web/handler"
 )
@@ -45,6 +46,7 @@ func (ds *dserver) InitDB() error {
 	db.LogMode(true)
 	//db.Exec("SET search_path TO team_action_dev")
 	db.AutoMigrate(&user.User{})
+	db.AutoMigrate(&note.Note{})
 	db.Model(&user.User{}).AddIndex("idx_user_name", "user_name")
 	db.Model(&user.User{}).AddUniqueIndex("idx_user_name", "user_name")
 
