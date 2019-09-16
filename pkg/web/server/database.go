@@ -2,6 +2,8 @@ package server
 
 import (
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"team_action/pkg/note"
 	"team_action/pkg/user"
@@ -15,13 +17,18 @@ func (ds *DServer) initDB() error {
 	}
 	// open logmode if env is dev
 	db.LogMode(true)
+
+	// postgresql only
 	//db.Exec("SET search_path TO team_action_dev")
 	db.AutoMigrate(&user.User{})
 
 	db.AutoMigrate(
-		&note.Note{},
 		&note.Category{},
+		&note.Note{},
 	)
+	//db.Model(&note.Note{}).AddForeignKey("category_id", "nt_categories(id)", "CASCADE", "CASCADE")
+	//sqlite3 only
+	db.Exec("PRAGMA foreign_keys = ON")
 
 	return nil
 }

@@ -57,7 +57,7 @@ func (u *noteRepo) GetByID(id string) (*note.Note, error) {
 	u.log.Debugf("get note details by id : %s", id)
 
 	note := &note.Note{}
-	err := u.db.Where("id = ?", id).First(&note).Error
+	err := u.db.Preload("Category").Where("id = ?", id).First(&note).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[noteRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)

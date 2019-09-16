@@ -1,9 +1,14 @@
 package dto
 
+import (
+	uuid "github.com/satori/go.uuid"
+)
+
 // NewNote-
 type NewNote struct {
-	Title string `json:"title" binding:"required"`
-	Body  string `json:"body" binding:"required"`
+	CategoryID uuid.UUID `json:"category_id"`
+	Title      string    `json:"title" binding:"required"`
+	Body       string    `json:"body" binding:"required"`
 }
 
 // EditNote-

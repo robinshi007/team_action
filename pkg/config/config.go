@@ -58,6 +58,7 @@ func NewConfig() (*Config, error) {
 			},
 		}
 	}
+	fmt.Println("APP_ENV:", env)
 	c := &Config{}
 
 	err := configor.Load(

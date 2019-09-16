@@ -6,11 +6,11 @@ import "team_action/pkg/base"
 type Category struct {
 	base.Entity
 	Name        string `json:"name" gorm:"type:varchar(255);column:name;index:idx_category_name;UNIQUE,NOT NULL"`
-	Description string `json:"description" gorm:"type:text;column:description;"`
-	Notes       []Note `json:"notes" gorm:"foreighkey:CategoryID"`
+	Description string `json:"description,omitempty" gorm:"type:text;column:description;"`
+	Notes       []Note `json:"notes,omitempty" gorm:"foreighkey:CategoryID"`
 }
 
 // TableName -
 func (n Category) TableName() string {
-	return "noteapp_categories"
+	return "nt_categories"
 }

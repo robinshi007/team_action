@@ -11,10 +11,11 @@ type Note struct {
 	base.Entity
 	Title      string    `json:"title" gorm:"type:varchar(255);index:idx_note_title;UNIQUE,NOT NULL"`
 	Body       string    `json:"body" gorm:"type:text;column:body;"`
-	CategoryID uuid.UUID `json:"-" gorm:"type:uuid;column:category_id;NOT NULL"`
+	CategoryID uuid.UUID `json:"-" gorm:"type:uuid REFERENCES nt_categories(id) ON DELETE CASCADE ON UPDATE CASCADE"`
+	Category   *Category `json:"category,omitempty" gorm:"PRELOAD:false"`
 }
 
 // TableName -
 func (n Note) TableName() string {
-	return "noteapp_notes"
+	return "nt_notes"
 }

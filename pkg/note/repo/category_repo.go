@@ -57,7 +57,7 @@ func (u *categoryRepo) GetByID(id string) (*note.Category, error) {
 	u.log.Debugf("get category details by id : %s", id)
 
 	category := &note.Category{}
-	err := u.db.Where("id = ?", id).First(&category).Error
+	err := u.db.Preload("Notes").Where("id = ?", id).First(&category).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[categoryRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)

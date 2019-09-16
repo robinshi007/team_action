@@ -57,15 +57,20 @@ func (n *noteCtrl) GetByID(ctx *gin.Context) {
 }
 
 func (n *noteCtrl) Store(ctx *gin.Context) {
+	//	cid, err := uuid.FromString(ctx.PostForm("category_id"))
+	//	if err != nil {
+	//		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
+	//		return
+	//	}
 	var note dto.NewNote
 	if err := ctx.ShouldBindJSON(&note); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 	id, err := n.svc.Store(&ne.Note{
-		Title: note.Title,
-		Body:  note.Body,
+		CategoryID: note.CategoryID,
+		Title:      note.Title,
+		Body:       note.Body,
 	})
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
