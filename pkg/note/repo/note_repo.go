@@ -46,7 +46,7 @@ func (u *noteRepo) GetAll() ([]*note.Note, error) {
 	u.log.Debug("get all the notes")
 
 	notes := make([]*note.Note, 0)
-	err := u.db.Find(&notes).Error
+	err := u.db.Preload("Category").Find(&notes).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[noteRepo.GetALL()]")
 	}
