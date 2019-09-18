@@ -17,6 +17,7 @@ func (ds *DServer) initRoutes() {
 
 	apiV1 := ds.router.Group("api/v1")
 	ds.healthRoutes(apiV1)
+	ds.authRoutes(apiV1)
 	ds.userRoutes(apiV1)
 
 	noteAppV1 := apiV1.Group("/noteapp")
@@ -24,20 +25,8 @@ func (ds *DServer) initRoutes() {
 }
 
 func (ds *DServer) globalRoutes(gr *gin.Engine) {
-	jwtMW, err := mw.NewJWT("test zone", "secret key")
-	if err != nil {
-		ds.logger.Info("JWT Error:" + err.Error())
-	}
 	a := handler.NewHelloCtrl()
-	gr.POST("/login", jwtMW.LoginHandler)
-
-	auth := gr.Group("/auth")
-	auth.GET("/refresh_token", jwtMW.RefreshHandler)
-	auth.Use(jwtMW.MiddlewareFunc())
-	{
-		auth.GET("/hello", a.SayHi)
-	}
-
+	gr.GET("/hello", a.SayHi)
 	gr.GET("/crash", a.Crash)
 	gr.NoRoute(handler.NotFoundResponse)
 }
@@ -48,6 +37,15 @@ func (ds *DServer) healthRoutes(api *gin.RouterGroup) {
 		h := handler.NewHealthCtrl()
 		healthRoutes.GET("/", h.Ping)
 	}
+}
+func (ds *DServer) authRoutes(api *gin.RouterGroup) {
+	jwtMW, err := mw.NewJWT("test zone", "secret key")
+	if err != nil {
+		ds.logger.Info("JWT Error:" + err.Error())
+	}
+	api.POST("/login", jwtMW.LoginHandler)
+	auth := api.Group("/auth")
+	auth.GET("/refresh_token", jwtMW.RefreshHandler)
 }
 func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 	jwtMW, err := mw.NewJWT("test zone", "secret key")
@@ -74,10 +72,10 @@ func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 	}
 }
 func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
-	//	jwtMW, err := mw.NewJWT("test zone", "secret key")
-	//	if err != nil {
-	//		ds.logger.Info("JWT Error:" + err.Error())
-	//	}
+	jwtMW, err := mw.NewJWT("test zone", "secret key")
+	if err != nil {
+		ds.logger.Info("JWT Error:" + err.Error())
+	}
 	noteRoutes := app.Group("/notes")
 	{
 		var noteSvc note.INoteService
@@ -88,12 +86,12 @@ func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
 
 		noteRoutes.GET("/", nh.GetAll)
 		noteRoutes.GET("/:id", nh.GetByID)
-		//		noteRoutes.Use(jwtMW.MiddlewareFunc())
-		//		{
-		noteRoutes.POST("/", nh.Store)
-		noteRoutes.PUT("/:id", nh.Update)
-		noteRoutes.DELETE("/:id", nh.Delete)
-		//		}
+		noteRoutes.Use(jwtMW.MiddlewareFunc())
+		{
+			noteRoutes.POST("/", nh.Store)
+			noteRoutes.PUT("/:id", nh.Update)
+			noteRoutes.DELETE("/:id", nh.Delete)
+		}
 	}
 	categoryRoutes := app.Group("/categories")
 	{
@@ -105,11 +103,11 @@ func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
 
 		categoryRoutes.GET("/", ch.GetAll)
 		categoryRoutes.GET("/:id", ch.GetByID)
-		//		categoryRoutes.Use(jwtMW.MiddlewareFunc())
-		//		{
-		categoryRoutes.POST("/", ch.Store)
-		categoryRoutes.PUT("/:id", ch.Update)
-		categoryRoutes.DELETE("/:id", ch.Delete)
-		//		}
+		categoryRoutes.Use(jwtMW.MiddlewareFunc())
+		{
+			categoryRoutes.POST("/", ch.Store)
+			categoryRoutes.PUT("/:id", ch.Update)
+			categoryRoutes.DELETE("/:id", ch.Delete)
+		}
 	}
 }

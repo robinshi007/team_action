@@ -28,7 +28,7 @@ describe('User', function(){
   })
   it('admin user should get token', function(done) {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
-    return frisby.post(host +'/login', {
+    return frisby.post(hostApi +'/login', {
       username: 'admin',
       password: 'admin'
 
