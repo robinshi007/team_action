@@ -2,13 +2,36 @@ const frisby = require('frisby');
 const Joi = frisby.Joi;
 
 const host = 'http://localhost:3000'
-const hostApi = host + '/api/v1/noteapp'
+const hostApi = host + '/api/v1'
+const hostNoteApp = host + '/api/v1/noteapp'
 
 describe('Category', function(){
+  var token = ""
   var categoryId=""
   var noteId=""
+  it('admin user should get token', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.post(hostApi +'/login', {
+      username: 'admin',
+      password: 'admin'
+
+    })
+      .expect('status', 200)
+      .expect('jsonTypesStrict', {
+        code: Joi.number(),
+        expire: Joi.string(),
+        token: Joi.string().min(20).max(180)
+      })
+      .then(function(res){
+        token = res.json.token
+      })
+      .done(done)
+  })
   it('user should able to create category', function() {
-    return frisby.post(hostApi +'/categories', {
+    return frisby.post(hostNoteApp +'/categories', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
       body : {
         name: 'category01',
       }
@@ -22,7 +45,7 @@ describe('Category', function(){
   })
   it('user should be list all categories', function() {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
-    return frisby.get(hostApi +'/categories')
+    return frisby.get(hostNoteApp +'/categories')
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.*', {
         id: Joi.string(),
@@ -32,7 +55,10 @@ describe('Category', function(){
       })
   })
   it('user should able to create first note with category_id', function() {
-    return frisby.post(hostApi +'/notes', {
+    return frisby.post(hostNoteApp +'/notes', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
       body : {
         title: 'note01',
         body: 'note01',
@@ -47,7 +73,10 @@ describe('Category', function(){
       })
   })
   it('user should able to create second note with category_id', function() {
-    return frisby.post(hostApi +'/notes', {
+    return frisby.post(hostNoteApp +'/notes', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
       body:{
         title: 'note02',
         body: 'note02',
@@ -57,7 +86,7 @@ describe('Category', function(){
       .expect('status', 201)
   })
   it('user should able to list 2 notes with category id', function() {
-    return frisby.get(hostApi +'/categories/' +  categoryId)
+    return frisby.get(hostNoteApp +'/categories/' +  categoryId)
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.notes.*', {
         id: Joi.string(),
@@ -71,7 +100,10 @@ describe('Category', function(){
       })
   })
   it('user should able to update note with id', function(done) {
-    return frisby.put(hostApi +'/notes/' +  noteId, {
+    return frisby.put(hostNoteApp +'/notes/' +  noteId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
       body: {
         title: 'note03',
         body: 'note03',
@@ -80,35 +112,46 @@ describe('Category', function(){
     })
       .expect('status', 200)
       .then(function(){
-        return frisby.get(hostApi +'/notes/' +  noteId)
+        return frisby.get(hostNoteApp +'/notes/' +  noteId)
         .expect('status', 200)
         .expect('bodyContains', 'note03')
         .done(done)
       })
   })
   it('user should able to delete note with id', function() {
-    return frisby.delete(hostApi +'/notes/' +  noteId)
+    return frisby.delete(hostNoteApp +'/notes/' +  noteId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .expect('status', 204)
   })
   it('user should able to update category with id', function(done) {
-    return frisby.put(hostApi +'/categories/' +  categoryId, {
+    return frisby.put(hostNoteApp +'/categories/' +  categoryId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
       body: {
         name: 'category02',
       }
     })
       .expect('status', 200)
       .then(function(){
-        return frisby.get(hostApi +'/categories/' +  categoryId)
+        return frisby.get(hostNoteApp +'/categories/' +  categoryId)
         .expect('status', 200)
         .expect('bodyContains', 'category02')
         .done(done)
       })
   })
   it('user should able to delete category with id', function(done) {
-    return frisby.delete(hostApi +'/categories/' +  categoryId)
+    return frisby.delete(hostNoteApp +'/categories/' +  categoryId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .expect('status', 204)
       .then(function(res){
-        return frisby.get(hostApi +'/categories')
+        return frisby.get(hostNoteApp +'/categories')
           .expect('status', 200)
           .then(function(res){
             return expect(res.json.data).toHaveLength(0)
@@ -117,7 +160,7 @@ describe('Category', function(){
       })
   })
   it('user should able to delete category with id caused CASCADE notes delete', function(done) {
-    return frisby.get(hostApi +'/notes')
+    return frisby.get(hostNoteApp +'/notes')
       .expect('status', 200)
       .then(function(res){
         return expect(res.json.data).toHaveLength(1)
