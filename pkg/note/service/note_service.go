@@ -36,3 +36,7 @@ func (svc *NoteService) Store(u *note.Note) (string, error) {
 func (svc *NoteService) Update(u *note.Note) error {
 	return svc.repo.Update(u)
 }
+
+func (svc *NoteService) Search(word string) ([]*note.Note, error) {
+	return svc.repo.Search(word)
+}

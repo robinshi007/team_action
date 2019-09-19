@@ -122,3 +122,15 @@ func (n *noteCtrl) Delete(ctx *gin.Context) {
 	}
 	ctx.Status(http.StatusNoContent)
 }
+
+func (n *noteCtrl) Search(ctx *gin.Context) {
+	word := ctx.Param("id")
+	notes, err := n.svc.Search(word)
+	if err != nil {
+		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
+		return
+	}
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
+		Data: notes,
+	})
+}

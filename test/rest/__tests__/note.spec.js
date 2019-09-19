@@ -106,7 +106,7 @@ describe('Category', function(){
       },
       body: {
         title: 'note03',
-        body: 'note03',
+        body: 'note03conent searchword great',
         category_id: categoryId,
       }
     })
@@ -117,6 +117,18 @@ describe('Category', function(){
         .expect('bodyContains', 'note03')
         .done(done)
       })
+  })
+  it('user should able to search notes with word', function(done) {
+    return frisby.get(hostNoteApp +'/notes/searchword/search', {
+      headers: {
+        Authorization: "Bearer " + token,
+      }
+    })
+      .expect('status', 200)
+      .then(function(res){
+        return expect(res.json.data).toHaveLength(1)
+      })
+      .done(done)
   })
   it('user should able to delete note with id', function() {
     return frisby.delete(hostNoteApp +'/notes/' +  noteId, {

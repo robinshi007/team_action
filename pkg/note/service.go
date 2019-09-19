@@ -7,6 +7,7 @@ type INoteService interface {
 	GetByID(id string) (*Note, error)
 	Store(u *Note) (string, error)
 	Update(u *Note) error
+	Search(word string) ([]*Note, error)
 }
 
 // ICategoryService -

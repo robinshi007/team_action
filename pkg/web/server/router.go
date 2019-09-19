@@ -91,6 +91,7 @@ func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
 
 		noteRoutes.GET("/", nh.GetAll)
 		noteRoutes.GET("/:id", nh.GetByID)
+		noteRoutes.GET("/:id/search", nh.Search)
 		noteRoutes.Use(jwtMW.MiddlewareFunc())
 		{
 			noteRoutes.POST("/", nh.Store)
