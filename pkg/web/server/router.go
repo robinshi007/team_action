@@ -26,7 +26,6 @@ func (ds *DServer) initRoutes() {
 
 func (ds *DServer) globalRoutes(gr *gin.Engine) {
 	a := handler.NewHelloCtrl()
-	gr.GET("/hello", a.SayHi)
 	gr.GET("/crash", a.Crash)
 	gr.NoRoute(handler.NotFoundResponse)
 }
@@ -43,9 +42,15 @@ func (ds *DServer) authRoutes(api *gin.RouterGroup) {
 	if err != nil {
 		ds.logger.Info("JWT Error:" + err.Error())
 	}
+	a := handler.NewHelloCtrl()
+
 	api.POST("/login", jwtMW.LoginHandler)
 	auth := api.Group("/auth")
 	auth.GET("/refresh_token", jwtMW.RefreshHandler)
+	auth.Use(jwtMW.MiddlewareFunc())
+	{
+		auth.GET("/hello", a.SayHi)
+	}
 }
 func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 	jwtMW, err := mw.NewJWT("test zone", "secret key")

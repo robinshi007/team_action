@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
 	"team_action/pkg/cerrors"
+	"team_action/pkg/jwt"
 	u "team_action/pkg/user"
 	"team_action/pkg/user/dto"
 )

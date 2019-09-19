@@ -11,7 +11,7 @@ import (
 	"team_action/pkg/web/helper"
 )
 
-const identityKey = "id"
+//const identityKey = "id"
 
 // NewJWT -
 func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
@@ -20,11 +20,11 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 		Key:         []byte(key),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
+		IdentityKey: dto.IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*user.User); ok {
 				return jwt.MapClaims{
-					identityKey: v.UserName,
+					dto.IdentityKey: v.UserName,
 				}
 			}
 			return jwt.MapClaims{}
@@ -32,7 +32,7 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &user.User{
-				UserName: claims[identityKey].(string),
+				UserName: claims[dto.IdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
