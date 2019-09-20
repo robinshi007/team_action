@@ -92,7 +92,7 @@ func (u *noteRepo) Search(word string) ([]*note.Note, error) {
 	u.log.Debug("get all the notes")
 
 	notes := make([]*note.Note, 0)
-	err := u.db.Where("body like ?", fmt.Sprintf("%%%s%%", word)).Find(&notes).Error
+	err := u.db.Preload("Category").Where("body like ?", fmt.Sprintf("%%%s%%", word)).Find(&notes).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[noteRepo.Search()]")
 	}
