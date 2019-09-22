@@ -18,8 +18,8 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       realm,
 		Key:         []byte(key),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
+		Timeout:     time.Hour * 8,
+		MaxRefresh:  time.Hour * 8,
 		IdentityKey: dto.IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*user.User); ok {

@@ -98,9 +98,10 @@ func (n *noteCtrl) Update(ctx *gin.Context) {
 		return
 	}
 	if err := n.svc.Update(&ne.Note{
-		Entity: base.Entity{ID: uid},
-		Title:  note.Title,
-		Body:   note.Body,
+		Entity:     base.Entity{ID: uid},
+		Title:      note.Title,
+		Body:       note.Body,
+		CategoryID: note.CategoryID,
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
 		//ghandler.HandleErrorRepsonse(err, ctx)

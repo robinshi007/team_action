@@ -13,6 +13,7 @@ type NewNote struct {
 
 // EditNote-
 type EditNote struct {
-	Title string `json:"title" binding:"required"`
-	Body  string `json:"body" binding:"required"`
+	Title      string    `json:"title" binding:"required"`
+	Body       string    `json:"body" binding:"required"`
+	CategoryID uuid.UUID `json:"category_id"`
 }

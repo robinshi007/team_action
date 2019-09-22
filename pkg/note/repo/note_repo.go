@@ -80,7 +80,7 @@ func (u *noteRepo) Store(n *note.Note) (string, error) {
 func (u *noteRepo) Update(n *note.Note) error {
 	u.log.Debugf("updating the note, id : %v", n.ID)
 
-	err := u.db.Model(&n).Updates(note.Note{Title: n.Title, Body: n.Body}).Error
+	err := u.db.Model(&n).Updates(note.Note{Title: n.Title, Body: n.Body, CategoryID: n.CategoryID}).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[noteRepo.Update()] error while updating the note")
 		return errors.Wrap(err, errMsg)
