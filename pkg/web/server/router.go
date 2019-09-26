@@ -72,6 +72,8 @@ func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 		{
 			userRoutes.POST("/", usr.Store)
 			userRoutes.PUT("/:id", usr.Update)
+			userRoutes.PUT("/:id/update_password", usr.UpdatePassword)
+			userRoutes.PUT("/:id/update_last_login", usr.UpdateLastLogin)
 			userRoutes.DELETE("/:id", usr.Delete)
 		}
 	}

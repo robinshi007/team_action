@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 
 	"team_action/pkg/cerrors"
+	"team_action/pkg/jwt"
 	"team_action/pkg/logger"
 	"team_action/pkg/user"
 	ue "team_action/pkg/user"
@@ -28,7 +31,6 @@ func (u *userCtrl) GetAll(ctx *gin.Context) {
 	users, err := u.svc.GetAll()
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
-		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &web.SuccessResponse{
@@ -40,14 +42,12 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 
 	user, err := u.svc.GetByID(id)
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
-		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &web.SuccessResponse{
@@ -56,10 +56,9 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 }
 
 func (u *userCtrl) Store(ctx *gin.Context) {
-	var user dto.User
+	var user dto.NewUser
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 	id, err := u.svc.Store(&ue.User{
@@ -68,7 +67,6 @@ func (u *userCtrl) Store(ctx *gin.Context) {
 	})
 	if err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
-		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{
@@ -80,14 +78,12 @@ func (u *userCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 
-	var user dto.User
+	var user dto.NewUser
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 	if err := u.svc.Update(&ue.User{
@@ -96,7 +92,6 @@ func (u *userCtrl) Update(ctx *gin.Context) {
 		Password: user.Password,
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
-		//ghandler.HandleErrorRepsonse(err, ctx)
 		return
 	}
 	ctx.Status(http.StatusOK)
@@ -106,7 +101,6 @@ func (u *userCtrl) Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if _, err := uuid.FromString(id); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
-		//ghandler.HandleBadRequestRepsonse(err, ctx)
 		return
 	}
 	if err := u.svc.Delete(id); err != nil {
@@ -114,4 +108,57 @@ func (u *userCtrl) Delete(ctx *gin.Context) {
 		return
 	}
 	ctx.Status(http.StatusNoContent)
+}
+func (u *userCtrl) UpdatePassword(ctx *gin.Context) {
+	claims := jwt.ExtractClaims(ctx)
+	current_user := claims[dto.IdentityKey].(string)
+
+	id := ctx.Param("id")
+	if _, err := uuid.FromString(id); err != nil {
+		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
+		return
+	}
+
+	userCopy, err := u.svc.GetByID(id)
+	if err != nil {
+		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
+		return
+	}
+	fmt.Println("current_user:", current_user)
+	fmt.Println("userCopy:", userCopy.UserName)
+
+	// only user self and admin can change the password
+	if current_user != userCopy.UserName && current_user != "admin" {
+		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
+		return
+	}
+
+	var user dto.EditPasswordUser
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
+		return
+	}
+	if err := u.svc.Update(&ue.User{
+		ID:       id,
+		Password: user.Password,
+	}); err != nil {
+		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
+		return
+	}
+	ctx.Status(http.StatusOK)
+}
+func (u *userCtrl) UpdateLastLogin(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if _, err := uuid.FromString(id); err != nil {
+		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
+		return
+	}
+	if err := u.svc.UpdateLastLogin(&ue.User{
+		ID:          id,
+		LastLoginAt: time.Now(),
+	}); err != nil {
+		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
+		return
+	}
+	ctx.Status(http.StatusOK)
 }

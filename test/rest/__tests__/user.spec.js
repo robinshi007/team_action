@@ -17,6 +17,8 @@ describe('User', function(){
         username: Joi.string(),
         created_at: Joi.string(),
         updated_at: Joi.string(),
+        is_active: Joi.number().integer().default(0),
+        last_login_at: Joi.string(),
       })
   })
   it('create user should be not ok without admin login', function() {
@@ -111,6 +113,47 @@ describe('User', function(){
         })
           .expect('status', 200)
           .expect('bodyContains', 'test1')
+          .done(done)
+      })
+  })
+  it('admin user should able to update password the test user', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.put(hostApi +'/users/' + testUserId + '/update_password', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body : {
+        password: 'test11',
+      }
+    })
+      .expect('status', 200)
+      .then(function(res){
+        return frisby.post(hostApi +'/login', {
+          body : {
+            username: 'test1',
+            password: 'test11',
+          }
+        })
+          .expect('status', 200)
+          .done(done)
+      })
+  })
+  it('admin user should able to update last_login_at the test user', function(done) {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.put(hostApi +'/users/' + testUserId + '/update_last_login', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .expect('status', 200)
+      .then(function(res){
+        return frisby.get(hostApi +'/users/' + testUserId, {
+          headers: {
+            Authorization: "Bearer " + token,
+          }
+        })
+          .expect('status', 200)
+          .expect('json','data.last_login_at', new RegExp((new Date()).getFullYear()))
           .done(done)
       })
   })

@@ -7,4 +7,6 @@ type Repo interface {
 	GetByID(id string) (*User, error)
 	Store(u *User) (string, error)
 	Update(u *User) error
+	UpdatePassword(u *User) error
+	UpdateLastLogin(u *User) error
 }

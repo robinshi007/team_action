@@ -69,18 +69,38 @@ func (u *userRepo) Store(usr *user.User) (string, error) {
 	if UserIsExist(u.db, usr.UserName) {
 		return "", fmt.Errorf("[userRepo.Store()] User name exist: %s", usr.UserName)
 	}
-  if err := u.db.Create(&usr).Error; err != nil {
-    return "", errors.Wrap(err, "[userRepo.Store()] error when creating the user")
-  }
-  return usr.ID, nil
+	if err := u.db.Create(&usr).Error; err != nil {
+		return "", errors.Wrap(err, "[userRepo.Store()] error when creating the user")
+	}
+	return usr.ID, nil
 }
 
 func (u *userRepo) Update(usr *user.User) error {
 	u.log.Debugf("updating the user, user_id : %v", usr.ID)
 
-	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, FirstName: usr.FirstName, LastName: usr.LastName, Password: usr.Password, Picture: usr.Picture, PhoneNumber: usr.PhoneNumber}).Error
+	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, Password: usr.Password, Picture: usr.Picture}).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[userRepo.Update()] error while updating the user")
+		return errors.Wrap(err, errMsg)
+	}
+	return nil
+}
+func (u *userRepo) UpdatePassword(usr *user.User) error {
+	u.log.Debugf("updating password for the user, user_id : %v", usr.ID)
+
+	err := u.db.Model(&usr).Updates(user.User{Password: usr.Password}).Error
+	if err != nil {
+		errMsg := fmt.Sprintf("[userRepo.UpdatePassword()] error while updating the user")
+		return errors.Wrap(err, errMsg)
+	}
+	return nil
+}
+func (u *userRepo) UpdateLastLogin(usr *user.User) error {
+	u.log.Debugf("updating last login for the user, user_id : %v", usr.ID)
+
+	err := u.db.Model(&usr).Updates(user.User{LastLoginAt: usr.LastLoginAt}).Error
+	if err != nil {
+		errMsg := fmt.Sprintf("[userRepo.UpdateLastLogin()] error while updating the user")
 		return errors.Wrap(err, errMsg)
 	}
 	return nil

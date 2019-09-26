@@ -9,6 +9,8 @@ type Service interface {
 	GetByID(id string) (*User, error)
 	Store(u *User) (string, error)
 	Update(u *User) error
+	UpdatePassword(u *User) error
+	UpdateLastLogin(u *User) error
 }
 
 type userService struct {
@@ -40,5 +42,13 @@ func (svc *userService) Store(u *User) (string, error) {
 }
 
 func (svc *userService) Update(u *User) error {
+	u.Password = helper.HashAndSalt([]byte(u.Password))
 	return svc.repo.Update(u)
+}
+func (svc *userService) UpdatePassword(u *User) error {
+	u.Password = helper.HashAndSalt([]byte(u.Password))
+	return svc.repo.UpdatePassword(u)
+}
+func (svc *userService) UpdateLastLogin(u *User) error {
+	return svc.repo.UpdateLastLogin(u)
 }

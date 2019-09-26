@@ -13,14 +13,13 @@ type User struct {
 	Email       string    `json:"-"  gorm:"type:varchar(200);UNIQUE,NOT NULL"`
 	UserName    string    `json:"username"  gorm:"type:varchar(50);column:user_name;index:idx_user_name;UNIQUE,NOT NULL"`
 	DisplayName string    `json:"-"  gorm:"type:varchar(50);column:display_name;"`
-	FirstName   string    `json:"-"  gorm:"type:varchar(50);column:first_name;"`
-	LastName    string    `json:"-" gorm:"type:varchar(50);column:last_name"`
 	Password    string    `json:"-" gorm:"type:varchar(50);NOT NULL"`
 	Gender      int8      `json:"-"`
 	Picture     string    `json:"-"`
-	PhoneNumber string    `json:"-" gorm:"column:phone_number"`
+	LastLoginAt time.Time `json:"last_login_at" gorm:"column:last_login_at"`
 	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"column:updated_at"`
+	IsActive    int8      `json:"is_active"`
 }
 
 // TableName -
