@@ -45,9 +45,11 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 
 			//			if (userName == "admin" && password == "admin") || (userName == "test" && password == "test") {
 			if helper.CheckAuth(userName, password) {
-				return &user.User{
-					UserName: userName,
-				}, nil
+				if helper.TouchLastLoginAt(userName) {
+					return &user.User{
+						UserName: userName,
+					}, nil
+				}
 			}
 
 			return nil, jwt.ErrFailedAuthentication

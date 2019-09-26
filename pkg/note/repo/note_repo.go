@@ -46,7 +46,7 @@ func (u *noteRepo) GetAll() ([]*note.Note, error) {
 	u.log.Debug("get all the notes")
 
 	notes := make([]*note.Note, 0)
-	err := u.db.Preload("Category").Find(&notes).Error
+	err := u.db.Preload("Category").Order("updated_at desc").Find(&notes).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[noteRepo.GetALL()]")
 	}
@@ -92,7 +92,7 @@ func (u *noteRepo) Search(word string) ([]*note.Note, error) {
 	u.log.Debug("get all the notes")
 
 	notes := make([]*note.Note, 0)
-	err := u.db.Preload("Category").Where("body like ?", fmt.Sprintf("%%%s%%", word)).Find(&notes).Error
+	err := u.db.Preload("Category").Where("title like ?", fmt.Sprintf("%%%s%%", word)).Or("body like ?", fmt.Sprintf("%%%s%%", word)).Find(&notes).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[noteRepo.Search()]")
 	}

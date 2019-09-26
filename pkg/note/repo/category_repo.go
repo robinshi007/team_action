@@ -46,7 +46,7 @@ func (u *categoryRepo) GetAll() ([]*note.Category, error) {
 	u.log.Debug("get all the categories")
 
 	categories := make([]*note.Category, 0)
-	err := u.db.Find(&categories).Error
+	err := u.db.Order("updated_at desc").Find(&categories).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[categoryRepo.GetALL()]")
 	}

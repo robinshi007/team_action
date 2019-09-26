@@ -10,8 +10,8 @@ solid/trusted, user/developer friendly, composable, scalable, evolutionable
 * [Doing] add unit test for model, service and handler
 * [Done] add dto for middleware and handler
 * [Done] add user login/logout feature with jwt supported
-* add 'Makefile' for task automation
-* re-order the structure to follow clean architecture rules
+* [Done]add 'Makefile' for task automation
+* [Doing] re-order the structure to follow clean architecture rules
 * refine the model/table naming and design to follow common database rules(auth,
 user, basemodel, version, tagging, audit, dev/ops[backup, security, performance])
 * schedule job
@@ -44,7 +44,15 @@ user, basemodel, version, tagging, audit, dev/ops[backup, security, performance]
 * news
 * market monitor
 
-## Todo helps
+## helps
 
 * setup
 * getting started
+
+## web trend
+
+* web 1.0: html/css/js, page based request, data CRUD
+* web 2.0: ajax, json based request, search/feeds/comment/like/tagging, hot data/desktop, ads
+* web 3.0: http2.0/websocket/webgl, realtime/graphql/PMA, mobile/cloud/IoT/Edge
+    big data/AI based bot, subscription
+

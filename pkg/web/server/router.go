@@ -66,10 +66,10 @@ func (ds *DServer) userRoutes(api *gin.RouterGroup) {
 
 		usr := user_handler.NewUserCtrl(ds.logger, userSvc)
 
-		userRoutes.GET("/", usr.GetAll)
-		userRoutes.GET("/:id", usr.GetByID)
 		userRoutes.Use(jwtMW.MiddlewareFunc())
 		{
+			userRoutes.GET("/", usr.GetAll)
+			userRoutes.GET("/:id", usr.GetByID)
 			userRoutes.POST("/", usr.Store)
 			userRoutes.PUT("/:id", usr.Update)
 			userRoutes.PUT("/:id/update_password", usr.UpdatePassword)

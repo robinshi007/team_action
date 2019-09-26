@@ -7,20 +7,12 @@ const hostApi = host + '/api/v1'
 describe('User', function(){
   var token = ""
   var tetUserId=""
-
-  it('list user should be ok but without password column', function() {
+  it('list user should be not ok without admin logined', function() {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
     return frisby.get(hostApi +'/users')
-      .expect('status', 200)
-      .expect('jsonTypesStrict', 'data.*', {
-        user_id: Joi.string(),
-        username: Joi.string(),
-        created_at: Joi.string(),
-        updated_at: Joi.string(),
-        is_active: Joi.number().integer().default(0),
-        last_login_at: Joi.string(),
-      })
+      .expect('status', 401)
   })
+
   it('create user should be not ok without admin login', function() {
     return frisby.post(hostApi +'/users', {
       username: 'test',
@@ -45,6 +37,23 @@ describe('User', function(){
         token = res.json.token
       })
       .done(done)
+  })
+  it('admin user should be ok but without password column', function() {
+    // Return the Frisby.js Spec in the 'it()' (just like a promise)
+    return frisby.get(hostApi +'/users', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .expect('status', 200)
+      .expect('jsonTypesStrict', 'data.*', {
+        user_id: Joi.string(),
+        username: Joi.string(),
+        created_at: Joi.string(),
+        updated_at: Joi.string(),
+        is_active: Joi.number().integer().default(0),
+        last_login_at: Joi.string(),
+      })
   })
 
   it('admin user should create user successfully at first time', function(done) {
