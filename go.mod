@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elazarl/go-bindata-assetfs v1.0.0 // indirect
 	github.com/gin-gonic/gin v1.4.0
+	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
