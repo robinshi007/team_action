@@ -1,17 +1,16 @@
 package di
 
 import (
-	"team_action/pkg/config"
-	"team_action/pkg/logger"
-	note_repo "team_action/pkg/note/repo"
-	note_service "team_action/pkg/note/service"
-	"team_action/pkg/sql"
-	"team_action/pkg/user"
-	user_repo "team_action/pkg/user/repo"
-
-	//	"team_action/pkg/login"
-
 	"go.uber.org/dig"
+
+	"team_action/core/config"
+	"team_action/core/logger"
+	"team_action/core/sql"
+	"team_action/core/user"
+	user_repo "team_action/core/user/repo"
+
+	note_repo "team_action/apps/note/repo"
+	note_service "team_action/apps/note/service"
 )
 
 // container - di container object
@@ -31,10 +30,6 @@ func BuildContainer() *dig.Container {
 
 		// logger
 		container.Provide(logger.NewLogger)
-
-		// login
-		// container.Provide(orm.NewLoginRepo)
-		// container.Provide(login.NewLoginService)
 
 		// user
 		container.Provide(user_repo.NewUserRepo)

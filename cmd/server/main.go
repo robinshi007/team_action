@@ -4,21 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"team_action/di"
-	"team_action/pkg/logger"
-	"team_action/pkg/web/server"
-
 	"github.com/gin-gonic/gin"
+
+	"team_action/core/logger"
+	"team_action/core/web/server"
+	"team_action/di"
 )
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
-		os.Exit(-1)
-	}
-}
-
-func run() error {
 	g := gin.New()
 	d := di.BuildContainer()
 
@@ -28,5 +21,9 @@ func run() error {
 	})
 
 	svr := server.NewServer(g, d, l)
-	return svr.Start()
+
+	if err := svr.Start(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
 }
