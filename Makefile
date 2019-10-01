@@ -4,8 +4,10 @@ GOTEST=$(GOCMD) test
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOGET=$(GOCMD) get
-BINARY_NAME=team_action
-BINARY_UNIX=$(BINARY_NAME)_unix
+SERVER_BINARY_NAME=team_action
+SERVER_BINARY_UNIX=$(SERVER_BINARY_NAME)_unix
+APP_BINARY_NAME=team_action_app
+APP_BINARY_UNIX=$(APP_BINARY_NAME)_unix
 SERVER_ENTRY=cmd/server/main.go
 APP_ENTRY=cmd/app/main.go
 
@@ -19,9 +21,17 @@ run_app:
 test:
 	$(GOTEST) -v ./...
 build:
-	$(GOBUILD) -o $(BINARY_NAME) -v $(SERVER_ENTRY)
+	$(GOBUILD) -o $(SERVER_BINARY_NAME) -v $(SERVER_ENTRY)
+build_app:
+	$(GOBUILD) -o $(APP_BINARY_NAME) -v $(APP_ENTRY)
+build_asset:
+	statik -src=./dist
 clean:
-	$(GOCLEAN) cmd/server/main.go
-	rm -f $(BINARY_NAME)
-	rm -f $(BINARY_UNIX)
+	$(GOCLEAN) $(SERVER_ENTRY)
+	$(GOCLEAN) $(APP_ENTRY)
+	rm -f $(SERVER_BINARY_NAME)
+	rm -f $(SERVER_BINARY_UNIX)
+	rm -f $(APP_BINARY_NAME)
+	rm -f $(APP_BINARY_UNIX)
+	rm -rf statik
 

@@ -9,6 +9,9 @@ import (
 	"net/url"
 
 	"github.com/go-chi/chi"
+	"github.com/rakyll/statik/fs"
+
+	_ "team_action/statik"
 )
 
 func init() {
@@ -29,7 +32,12 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fs := http.FileServer(http.Dir("dist"))
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	//fs := http.FileServer(http.Dir("dist"))
+	fss := http.FileServer(statikFS)
 
 	r := chi.NewRouter()
 	r.Get("/api/*", apiHandler)
@@ -38,8 +46,8 @@ func main() {
 	r.Delete("/api/*", apiHandler)
 
 	r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fs.ServeHTTP(w, r)
+		fss.ServeHTTP(w, r)
 	}))
-  fmt.Println("listen on :8080")
+	fmt.Println("listen on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

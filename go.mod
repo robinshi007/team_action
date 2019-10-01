@@ -14,6 +14,7 @@ require (
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/pkg/errors v0.8.1
+	github.com/rakyll/statik v0.1.6
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/dig v1.7.0
