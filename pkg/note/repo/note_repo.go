@@ -46,7 +46,9 @@ func (u *noteRepo) GetAll() ([]*note.Note, error) {
 	u.log.Debug("get all the notes")
 
 	notes := make([]*note.Note, 0)
-	err := u.db.Preload("Category").Order("updated_at desc").Find(&notes).Error
+	err := u.db.Preload("UpdatedBy", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, user_name")
+	}).Preload("Category").Order("updated_at desc").Find(&notes).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[noteRepo.GetALL()]")
 	}
@@ -57,7 +59,9 @@ func (u *noteRepo) GetByID(id string) (*note.Note, error) {
 	u.log.Debugf("get note details by id : %s", id)
 
 	note := &note.Note{}
-	err := u.db.Preload("Category").Where("id = ?", id).First(&note).Error
+	err := u.db.Preload("UpdatedBy", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, user_name")
+	}).Preload("Category").Where("id = ?", id).First(&note).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[noteRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)

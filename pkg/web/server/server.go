@@ -44,5 +44,7 @@ func (ds *DServer) Start() error {
 	if err := ds.initDB(); err != nil {
 		return err
 	}
+	// init database seed
+
 	return ds.router.Run(fmt.Sprintf(":%s", cfg.Port))
 }

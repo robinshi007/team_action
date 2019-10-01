@@ -20,7 +20,7 @@ describe('Category', function(){
       .expect('jsonTypesStrict', {
         code: Joi.number(),
         expire: Joi.string(),
-        token: Joi.string().min(20).max(180)
+        token: Joi.string().min(20).max(250)
       })
       .then(function(res){
         token = res.json.token
@@ -45,13 +45,17 @@ describe('Category', function(){
   })
   it('user should be list all categories', function() {
     // Return the Frisby.js Spec in the 'it()' (just like a promise)
-    return frisby.get(hostNoteApp +'/categories')
+    return frisby.get(hostNoteApp +'/categories', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.*', {
         id: Joi.string(),
         name: Joi.string(),
-        created_at: Joi.string(),
         updated_at: Joi.string(),
+        updated_by: Joi.object(),
       })
   })
   it('user should able to create first note with category_id', function() {
@@ -86,14 +90,18 @@ describe('Category', function(){
       .expect('status', 201)
   })
   it('user should able to list 2 notes with category id', function() {
-    return frisby.get(hostNoteApp +'/categories/' +  categoryId)
+    return frisby.get(hostNoteApp +'/categories/' +  categoryId, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.notes.*', {
         id: Joi.string(),
         title: Joi.string(),
         body: Joi.string(),
-        created_at: Joi.string(),
         updated_at: Joi.string(),
+        updated_by: Joi.any(),
       })
       .then(function(res){
         return expect(res.json.data.notes).toHaveLength(2)
@@ -112,7 +120,11 @@ describe('Category', function(){
     })
       .expect('status', 200)
       .then(function(){
-        return frisby.get(hostNoteApp +'/notes/' +  noteId)
+        return frisby.get(hostNoteApp +'/notes/' +  noteId, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
         .expect('status', 200)
         .expect('bodyContains', 'note03')
         .done(done)
@@ -149,7 +161,11 @@ describe('Category', function(){
     })
       .expect('status', 200)
       .then(function(){
-        return frisby.get(hostNoteApp +'/categories/' +  categoryId)
+        return frisby.get(hostNoteApp +'/categories/' +  categoryId, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
         .expect('status', 200)
         .expect('bodyContains', 'category02')
         .done(done)
@@ -163,7 +179,11 @@ describe('Category', function(){
     })
       .expect('status', 204)
       .then(function(res){
-        return frisby.get(hostNoteApp +'/categories')
+        return frisby.get(hostNoteApp +'/categories', {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
           .expect('status', 200)
           .then(function(res){
             return expect(res.json.data).toHaveLength(0)
@@ -172,7 +192,11 @@ describe('Category', function(){
       })
   })
   it('user should able to delete category with id caused CASCADE notes delete', function(done) {
-    return frisby.get(hostNoteApp +'/notes')
+    return frisby.get(hostNoteApp +'/notes', {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .expect('status', 200)
       .then(function(res){
         return expect(res.json.data).toHaveLength(1)

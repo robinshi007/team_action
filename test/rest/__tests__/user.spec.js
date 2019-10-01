@@ -31,7 +31,7 @@ describe('User', function(){
       .expect('jsonTypesStrict', {
         code: Joi.number(),
         expire: Joi.string(),
-        token: Joi.string().min(20).max(180)
+        token: Joi.string().min(20).max(250)
       })
       .then(function(res){
         token = res.json.token
@@ -47,7 +47,7 @@ describe('User', function(){
     })
       .expect('status', 200)
       .expect('jsonTypesStrict', 'data.*', {
-        user_id: Joi.string(),
+        id: Joi.string(),
         username: Joi.string(),
         created_at: Joi.string(),
         updated_at: Joi.string(),

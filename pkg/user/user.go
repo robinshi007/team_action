@@ -9,11 +9,11 @@ import (
 
 // User -
 type User struct {
-	ID          string    `json:"user_id"  gorm:"type:uuid;column:user_id;primary_key;"`
-	Email       string    `json:"-"  gorm:"type:varchar(200);UNIQUE,NOT NULL"`
+	ID          uuid.UUID `json:"id"  gorm:"type:uuid;primary_key;"`
+	Email       string    `json:"-"  gorm:"type:varchar(255);UNIQUE,NOT NULL"`
 	UserName    string    `json:"username"  gorm:"type:varchar(50);column:user_name;index:idx_user_name;UNIQUE,NOT NULL"`
 	DisplayName string    `json:"-"  gorm:"type:varchar(50);column:display_name;"`
-	Password    string    `json:"-" gorm:"type:varchar(50);NOT NULL"`
+	Password    string    `json:"-" gorm:"type:varchar(255);NOT NULL"`
 	Gender      int8      `json:"-"`
 	Picture     string    `json:"-"`
 	LastLoginAt time.Time `json:"last_login_at" gorm:"column:last_login_at"`

@@ -23,7 +23,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("url", url)
+	fmt.Println("proxy to => ", url)
 	proxy := httputil.NewSingleHostReverseProxy(url)
 	proxy.ServeHTTP(w, r)
 }
@@ -40,5 +40,6 @@ func main() {
 	r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	}))
+  fmt.Println("listen on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

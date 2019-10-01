@@ -12,6 +12,8 @@ import (
 	"team_action/pkg/note"
 	ne "team_action/pkg/note"
 	"team_action/pkg/note/dto"
+	"team_action/pkg/user"
+	udto "team_action/pkg/user/dto"
 	"team_action/pkg/web"
 )
 
@@ -62,12 +64,18 @@ func (n *noteCtrl) Store(ctx *gin.Context) {
 	//		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 	//		return
 	//	}
+	currentUser, _ := ctx.Get(udto.IdentityKey)
+	currentUserID := currentUser.(*user.User).ID
 	var note dto.NewNote
 	if err := ctx.ShouldBindJSON(&note); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		return
 	}
 	id, err := n.svc.Store(&ne.Note{
+		Entity: base.Entity{
+			CreatedByID: currentUserID,
+			UpdatedByID: currentUserID,
+		},
 		CategoryID: note.CategoryID,
 		Title:      note.Title,
 		Body:       note.Body,
@@ -85,6 +93,9 @@ func (n *noteCtrl) Store(ctx *gin.Context) {
 func (n *noteCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	uid, err := uuid.FromString(id)
+	currentUser, _ := ctx.Get(udto.IdentityKey)
+	currentUserID := currentUser.(*user.User).ID
+
 	if err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		//ghandler.HandleBadRequestRepsonse(err, ctx)
@@ -98,7 +109,10 @@ func (n *noteCtrl) Update(ctx *gin.Context) {
 		return
 	}
 	if err := n.svc.Update(&ne.Note{
-		Entity:     base.Entity{ID: uid},
+		Entity: base.Entity{
+			ID:          uid,
+			UpdatedByID: currentUserID,
+		},
 		Title:      note.Title,
 		Body:       note.Body,
 		CategoryID: note.CategoryID,

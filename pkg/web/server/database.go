@@ -7,6 +7,7 @@ import (
 
 	"team_action/pkg/note"
 	"team_action/pkg/user"
+	"team_action/pkg/user/helper"
 )
 
 // init database -
@@ -20,15 +21,23 @@ func (ds *DServer) initDB() error {
 
 	// postgresql only
 	//db.Exec("SET search_path TO team_action_dev")
-	db.AutoMigrate(&user.User{})
+	if !db.HasTable("users") {
+		db.AutoMigrate(&user.User{})
+		db.AutoMigrate(
+			&note.Category{},
+			&note.Note{},
+		)
 
-	db.AutoMigrate(
-		&note.Category{},
-		&note.Note{},
-	)
+		Password := helper.HashAndSalt([]byte("admin"))
+		adminUser := user.User{
+			UserName: "admin",
+			Password: Password,
+		}
+		db.Create(&adminUser)
+	}
 	//db.Model(&note.Note{}).AddForeignKey("category_id", "nt_categories(id)", "CASCADE", "CASCADE")
 	//sqlite3 only
-	db.Exec("PRAGMA foreign_keys = ON")
+	//db.Exec("PRAGMA foreign_keys = ON")
 
 	return nil
 }

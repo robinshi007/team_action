@@ -7,10 +7,10 @@ logger:
 #  use: postgres
 #  connection:
 #    enabled: true
-#    host: 192.168.2.2
+#    host: localhost
 #    port: 5432
-#    userName: dbuser
-#    password: dbuser
+#    userName: postgres
+#    password: postgres
 #    database: team_action_dev
 db:
   use: sqlite3

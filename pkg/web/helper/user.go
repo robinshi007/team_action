@@ -11,18 +11,18 @@ import (
 )
 
 // CheckAuth -
-func CheckAuth(name, pass string) bool {
+func CheckAuth(name, pass string) (bool, *u.User) {
 	var db *gorm.DB
 	d := di.BuildContainer()
 	if err := d.Invoke(func(d *gorm.DB) { db = d }); err != nil {
-		return false
+		return false, nil
 	}
 	var user u.User
 	db.Where("user_name = ?", name).First(&user)
-	if user.ID != "" {
-		return uhelper.ComparePassword(user.Password, []byte(pass))
+	if user.UserName != "" {
+		return uhelper.ComparePassword(user.Password, []byte(pass)), &user
 	}
-	return false
+	return false, nil
 }
 
 // TouchLastLoginAt -

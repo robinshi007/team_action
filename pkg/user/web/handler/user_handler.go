@@ -56,6 +56,8 @@ func (u *userCtrl) GetByID(ctx *gin.Context) {
 }
 
 func (u *userCtrl) Store(ctx *gin.Context) {
+	currentUser, _ := ctx.Get(dto.IdentityKey)
+	fmt.Println("ctx.Get()", currentUser)
 	var user dto.NewUser
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
@@ -76,7 +78,8 @@ func (u *userCtrl) Store(ctx *gin.Context) {
 
 func (u *userCtrl) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if _, err := uuid.FromString(id); err != nil {
+	uid, err := uuid.FromString(id)
+	if err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		return
 	}
@@ -87,7 +90,7 @@ func (u *userCtrl) Update(ctx *gin.Context) {
 		return
 	}
 	if err := u.svc.Update(&ue.User{
-		ID:       id,
+		ID:       uid,
 		UserName: user.UserName,
 		Password: user.Password,
 	}); err != nil {
@@ -111,10 +114,11 @@ func (u *userCtrl) Delete(ctx *gin.Context) {
 }
 func (u *userCtrl) UpdatePassword(ctx *gin.Context) {
 	claims := jwt.ExtractClaims(ctx)
-	current_user := claims[dto.IdentityKey].(string)
+	current_user := claims[dto.IdentityName].(string)
 
 	id := ctx.Param("id")
-	if _, err := uuid.FromString(id); err != nil {
+	uid, err := uuid.FromString(id)
+	if err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		return
 	}
@@ -139,7 +143,7 @@ func (u *userCtrl) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 	if err := u.svc.Update(&ue.User{
-		ID:       id,
+		ID:       uid,
 		Password: user.Password,
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
@@ -149,12 +153,14 @@ func (u *userCtrl) UpdatePassword(ctx *gin.Context) {
 }
 func (u *userCtrl) UpdateLastLogin(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if _, err := uuid.FromString(id); err != nil {
+
+	uid, err := uuid.FromString(id)
+	if err != nil {
 		ctx.Error(cerrors.NewParamError([]string{err.Error()}))
 		return
 	}
 	if err := u.svc.UpdateLastLogin(&ue.User{
-		ID:          id,
+		ID:          uid,
 		LastLoginAt: time.Now(),
 	}); err != nil {
 		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))

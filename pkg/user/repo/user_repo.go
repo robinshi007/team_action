@@ -24,7 +24,7 @@ func NewUserRepo(db *gorm.DB, log logger.LogInfoFormat) user.Repo {
 func UserIsExist(db *gorm.DB, name string) bool {
 	var user user.User
 	db.Where("user_name = ?", name).First(&user)
-	if user.ID != "" {
+	if user.UserName != "" {
 		return true
 	}
 	return false
@@ -33,7 +33,7 @@ func UserIsExist(db *gorm.DB, name string) bool {
 func (u *userRepo) Delete(id string) error {
 	u.log.Debugf("deleting the user with id : %s", id)
 
-	if err := u.db.Delete(&user.User{}, "user_id = ?", id).Error; err != nil {
+	if err := u.db.Delete(&user.User{}, "id = ?", id).Error; err != nil {
 		errMsg := fmt.Sprintf("[userRepo.Delete()] with id : %s", id)
 		return errors.Wrap(err, errMsg)
 	}
@@ -55,7 +55,7 @@ func (u *userRepo) GetByID(id string) (*user.User, error) {
 	u.log.Debugf("get user details by id : %s", id)
 
 	user := &user.User{}
-	err := u.db.Where("user_id = ?", id).First(&user).Error
+	err := u.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[userRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)
@@ -72,13 +72,13 @@ func (u *userRepo) Store(usr *user.User) (string, error) {
 	if err := u.db.Create(&usr).Error; err != nil {
 		return "", errors.Wrap(err, "[userRepo.Store()] error when creating the user")
 	}
-	return usr.ID, nil
+	return usr.ID.String(), nil
 }
 
 func (u *userRepo) Update(usr *user.User) error {
-	u.log.Debugf("updating the user, user_id : %v", usr.ID)
+	u.log.Debugf("updating the user, id : %v", usr.ID)
 
-	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, Password: usr.Password, Picture: usr.Picture}).Error
+	err := u.db.Model(&usr).Updates(user.User{UserName: usr.UserName, Password: usr.Password}).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[userRepo.Update()] error while updating the user")
 		return errors.Wrap(err, errMsg)
@@ -86,7 +86,7 @@ func (u *userRepo) Update(usr *user.User) error {
 	return nil
 }
 func (u *userRepo) UpdatePassword(usr *user.User) error {
-	u.log.Debugf("updating password for the user, user_id : %v", usr.ID)
+	u.log.Debugf("updating password for the user, id : %v", usr.ID)
 
 	err := u.db.Model(&usr).Updates(user.User{Password: usr.Password}).Error
 	if err != nil {
@@ -96,7 +96,7 @@ func (u *userRepo) UpdatePassword(usr *user.User) error {
 	return nil
 }
 func (u *userRepo) UpdateLastLogin(usr *user.User) error {
-	u.log.Debugf("updating last login for the user, user_id : %v", usr.ID)
+	u.log.Debugf("updating last login for the user, id : %v", usr.ID)
 
 	err := u.db.Model(&usr).Updates(user.User{LastLoginAt: usr.LastLoginAt}).Error
 	if err != nil {

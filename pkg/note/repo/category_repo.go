@@ -25,7 +25,7 @@ func NewCategoryRepo(db *gorm.DB, log logger.LogInfoFormat) note.ICategoryRepo {
 func CategoryIsExist(db *gorm.DB, title string) bool {
 	var category note.Category
 	var emptyUUID = uuid.UUID{}
-	db.Where("name= ?", title).First(&category)
+	db.Select("id, name").Where("name = ?", title).First(&category)
 	if category.ID != emptyUUID {
 		return true
 	}
@@ -46,7 +46,9 @@ func (u *categoryRepo) GetAll() ([]*note.Category, error) {
 	u.log.Debug("get all the categories")
 
 	categories := make([]*note.Category, 0)
-	err := u.db.Order("updated_at desc").Find(&categories).Error
+	err := u.db.Preload("UpdatedBy", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, user_name")
+	}).Order("updated_at desc").Find(&categories).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[categoryRepo.GetALL()]")
 	}
@@ -57,7 +59,11 @@ func (u *categoryRepo) GetByID(id string) (*note.Category, error) {
 	u.log.Debugf("get category details by id : %s", id)
 
 	category := &note.Category{}
-	err := u.db.Preload("Notes").Where("id = ?", id).First(&category).Error
+	err := u.db.Preload("Notes", func(db *gorm.DB) *gorm.DB {
+		return db.Omit("updated_at, updated_by")
+	}).Preload("UpdatedBy", func(db *gorm.DB) *gorm.DB {
+		return db.Select("id, user_name")
+	}).Where("id = ?", id).First(&category).Error
 	if err != nil {
 		errMsg := fmt.Sprintf("[categoryRepo.GetByID()] with id : %s", id)
 		return nil, errors.Wrap(err, errMsg)

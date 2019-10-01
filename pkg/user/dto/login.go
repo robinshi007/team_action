@@ -1,7 +1,10 @@
 package dto
 
 // IdentityKey -
-var IdentityKey = "id"
+var IdentityKey = "userid"
+
+// IdentityName -
+var IdentityName = "username"
 
 // Login -
 type Login struct {

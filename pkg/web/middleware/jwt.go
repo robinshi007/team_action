@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 
 	"team_action/pkg/jwt"
 	"team_action/pkg/user"
@@ -24,15 +26,19 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*user.User); ok {
 				return jwt.MapClaims{
-					dto.IdentityKey: v.UserName,
+					dto.IdentityKey:  v.ID,
+					dto.IdentityName: v.UserName,
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
+			uid, _ := uuid.FromString(claims[dto.IdentityKey].(string))
+			fmt.Println("IdentityHandler() uid:", uid)
 			return &user.User{
-				UserName: claims[dto.IdentityKey].(string),
+				ID:       uid,
+				UserName: claims[dto.IdentityName].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -44,11 +50,9 @@ func NewJWT(realm string, key string) (*jwt.GinJWTMiddleware, error) {
 			password := loginVals.Password
 
 			//			if (userName == "admin" && password == "admin") || (userName == "test" && password == "test") {
-			if helper.CheckAuth(userName, password) {
+			if isAuth, user := helper.CheckAuth(userName, password); isAuth {
 				if helper.TouchLastLoginAt(userName) {
-					return &user.User{
-						UserName: userName,
-					}, nil
+					return user, nil
 				}
 			}
 
