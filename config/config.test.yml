@@ -1,14 +1,12 @@
-logger:
-  use: zapLogger
-  environment: dev
-  loglevel: debug
-  filename: tmp/team_action_test.log
-db:
-  use: sqlite3
-  connection:
-    enabled: true
-    host:
-    port: 
-    userName: 
-    password: 
-    database: tmp/team_action_test.db
+server:
+  name: team_action
+  host: localhost
+  port: 3000
+log:
+  code: zap
+  level: debug
+  file_name: tmp/team_action_test.log
+database:
+  code: sqldb
+  driver_name: sqlite3
+  url_address: tmp/team_action_test.db

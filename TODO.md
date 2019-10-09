@@ -10,7 +10,7 @@ solid/trusted, user/developer friendly, composable, scalable, evolutionable
 * [Doing] add unit test for model, service and handler
 * [Done] add dto for middleware and handler
 * [Done] add user login/logout feature with jwt supported
-* [Done]add 'Makefile' for task automation
+* [Done] add 'Makefile' for task automation
 * [Doing] re-order the structure to follow clean architecture rules
 * refine the model/table naming and design to follow common database rules(auth,
 user, basemodel, version, tagging, audit, dev/ops[backup, security, performance])

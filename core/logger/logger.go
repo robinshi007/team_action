@@ -44,7 +44,7 @@ type Logger struct {
 
 // NewLogger -
 func NewLogger(c *config.Config) (LogInfoFormat, error) {
-	if c.Logger.Use == "zapLogger" {
+	if c.Log.Code == "zap" {
 		z, er := NewZapLogger(c)
 		if er != nil {
 			log.Fatalf("can't initialize zap logger: %v", er)
@@ -53,7 +53,7 @@ func NewLogger(c *config.Config) (LogInfoFormat, error) {
 		return &Logger{zapSugarLogger: z}, nil
 
 	}
-	return nil, errors.New("logger not supported : " + c.Logger.Use)
+	return nil, errors.New("logger not supported : " + c.Log.Code)
 }
 
 func (l *Logger) Debug(args ...interface{}) {

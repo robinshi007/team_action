@@ -2,7 +2,6 @@ package sql
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jinzhu/gorm"
 	// postgres
@@ -15,15 +14,15 @@ import (
 
 // NewDb -
 func NewDb(c *config.Config) (*gorm.DB, error) {
-	if c.DB.Use == "postgres" {
+	if c.Database.DriverName == "postgres" {
 		return newPostgres(c)
-	} else if c.DB.Use == "sqlite3" {
+	} else if c.Database.DriverName == "sqlite3" {
 		return newSqlite3(c)
 	}
 	return nil, errors.New("Not supported db")
 }
 func newSqlite3(c *config.Config) (*gorm.DB, error) {
-	db, err := gorm.Open("sqlite3", c.DB.Connection.Database)
+	db, err := gorm.Open("sqlite3", c.Database.URLAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +30,7 @@ func newSqlite3(c *config.Config) (*gorm.DB, error) {
 }
 
 func newPostgres(c *config.Config) (*gorm.DB, error) {
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.DB.Connection.Host,
-		c.DB.Connection.Port,
-		c.DB.Connection.UserName,
-		c.DB.Connection.Password,
-		c.DB.Connection.Database,
-	)
-
+	psqlInfo := c.Database.URLAddress
 	db, err := gorm.Open("postgres", psqlInfo)
 	if err != nil {
 		return nil, err

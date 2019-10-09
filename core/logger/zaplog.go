@@ -14,8 +14,10 @@ import (
 func NewZapLogger(config *config.Config) (*zap.SugaredLogger, error) {
 	var cfg zap.Config
 
-	switch strings.ToLower(config.Logger.Environment) {
+	switch strings.ToLower(config.Mode) {
 	case "dev", "development":
+		cfg = zap.NewDevelopmentConfig()
+	case "test":
 		cfg = zap.NewDevelopmentConfig()
 	case "prod", "production":
 		cfg = zap.NewProductionConfig()
@@ -23,8 +25,8 @@ func NewZapLogger(config *config.Config) (*zap.SugaredLogger, error) {
 		return nil, errors.New("logger environment not supported")
 	}
 
-	cfg.Level = zap.NewAtomicLevelAt(getLevel(config.Logger.LogLevel))
-	cfg.OutputPaths = []string{config.Logger.FileName}
+	cfg.Level = zap.NewAtomicLevelAt(getLevel(config.Log.Level))
+	cfg.OutputPaths = []string{config.Log.FileName}
 	log, err := cfg.Build()
 	if err != nil {
 		return nil, errors.New("zap logger build constructs failed")

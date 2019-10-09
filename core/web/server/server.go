@@ -46,5 +46,5 @@ func (ds *DServer) Start() error {
 	}
 	// init database seed
 
-	return ds.router.Run(fmt.Sprintf(":%s", cfg.Port))
+	return ds.router.Run(fmt.Sprintf(":%s", cfg.Server.Port))
 }

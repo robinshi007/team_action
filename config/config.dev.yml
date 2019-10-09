@@ -1,23 +1,17 @@
-logger:
-  use: zapLogger
-  environment: dev
-  loglevel: debug
-  filename: tmp/team_action_dev.log
-#db:
-#  use: postgres
-#  connection:
-#    enabled: true
-#    host: localhost
-#    port: 5432
-#    userName: postgres
-#    password: postgres
-#    database: team_action_dev
-db:
-  use: sqlite3
-  connection:
-    enabled: true
-    host:
-    port: 
-    userName: 
-    password: 
-    database: tmp/team_action_dev.db
+server:
+  name: team_action
+  host: localhost
+  port: 3000
+log:
+  code: zap
+  level: debug
+  file_name: tmp/team_action_dev.log
+#database:
+#  code: sqldb
+#  driver_name: postgres
+#  url_address: "host=localhost port=5432 user=postgres password=postgres dbname=team_action_dev sslmode=disable"
+#  db_name: team_action_dev
+database:
+  code: sqldb
+  driver_name: sqlite3
+  url_address: "tmp/team_action_dev.db"
