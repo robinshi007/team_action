@@ -112,6 +112,7 @@ func (ds *DServer) noteAppRoutes(app *gin.RouterGroup) {
 
 		categoryRoutes.GET("/", ch.GetAll)
 		categoryRoutes.GET("/:id", ch.GetByID)
+		categoryRoutes.GET("/:id/by_name", ch.GetByName)
 		categoryRoutes.Use(jwtMW.MiddlewareFunc())
 		{
 			categoryRoutes.POST("/", ch.Store)

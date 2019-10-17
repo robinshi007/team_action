@@ -57,6 +57,20 @@ func (n *CategoryCtrl) GetByID(ctx *gin.Context) {
 	})
 }
 
+// GetByName -
+func (n *CategoryCtrl) GetByName(ctx *gin.Context) {
+	name := ctx.Param("id")
+
+	category, err := n.svc.GetByName(name)
+	if err != nil {
+		ctx.Error(cerrors.NewCustomError("1103", []string{err.Error()}))
+		return
+	}
+	ctx.JSON(http.StatusOK, &web.SuccessResponse{
+		Data: category,
+	})
+}
+
 // Store -
 func (n *CategoryCtrl) Store(ctx *gin.Context) {
 	currentUser, err := helper.GetCurrentUser(ctx)

@@ -29,6 +29,10 @@ func (svc *categoryService) GetByID(id string) (*note.Category, error) {
 	return svc.repo.GetByID(id)
 }
 
+func (svc *categoryService) GetByName(name string) (*note.Category, error) {
+	return svc.repo.GetByName(name)
+}
+
 func (svc *categoryService) Store(u *note.Category) (string, error) {
 	return svc.repo.Store(u)
 }

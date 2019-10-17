@@ -72,6 +72,18 @@ func (u *categoryRepo) GetByID(id string) (*note.Category, error) {
 	return category, nil
 }
 
+func (u *categoryRepo) GetByName(name string) (*note.Category, error) {
+	u.log.Debugf("get category details by name : %s", name)
+
+	category := &note.Category{}
+	err := u.db.Where("name = ?", name).First(&category).Error
+	if err != nil {
+		errMsg := fmt.Sprintf("[categoryRepo.GetByName()] with name : %s", name)
+		return nil, errors.Wrap(err, errMsg)
+	}
+	return category, nil
+}
+
 func (u *categoryRepo) Store(n *note.Category) (string, error) {
 	u.log.Debugf("creating the category with title: %v", n.Name)
 

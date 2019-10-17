@@ -15,6 +15,7 @@ type CategoryRepo interface {
 	Delete(id string) error
 	GetAll() ([]*Category, error)
 	GetByID(id string) (*Category, error)
+	GetByName(name string) (*Category, error)
 	Store(u *Category) (string, error)
 	Update(u *Category) error
 }
